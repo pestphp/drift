@@ -1,0 +1,29 @@
+{
+    "name": "pestphp/drift",
+    "description": "Drifting you to Pest",
+    "type": "library",
+    "require": {
+        "php": "^7.3"
+    },
+    "authors": [
+        {
+            "name": "Oliver Nybroe",
+            "email": "olivernybroe@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Pest\\Drift\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Pest\\Drift\\Testing\\": "tests/"
+        }
+    },
+    "require-dev": {
+        "pestphp/pest": "^0.1.5"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
