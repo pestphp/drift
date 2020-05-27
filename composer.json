@@ -26,5 +26,8 @@
         "pestphp/pest": "^0.1.5"
     },
     "minimum-stability": "dev",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "bin": [
+        "bin/drift"
+    ]
 }

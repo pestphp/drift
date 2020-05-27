@@ -1,0 +1,27 @@
+#!/usr/bin/env php
+<?php declare(strict_types=1);
+
+// Used when Drift is required using composer.
+$vendorPath = realpath(__DIR__ . '/../../../../vendor');
+
+// Used when Drift maintainers are running Drift tests.
+$localPath = realpath(__DIR__ . '/../vendor');
+
+if (file_exists("{$localPath}/autoload.php")) {
+    $vendorPath = $localPath;
+}
+
+require_once "{$vendorPath}/autoload.php";
+
+$process = new \Symfony\Component\Process\Process([
+    "{$vendorPath}/bin/rector",
+    'process',
+    (new \Symfony\Component\Console\Input\ArgvInput())->getFirstArgument(),
+    '--dry-run',
+    '--config',
+    __DIR__ . '/../config/phpunit-to-pest.yml',
+]);
+
+$process->run();
+
+(new \Symfony\Component\Console\Output\ConsoleOutput())->write($process);
