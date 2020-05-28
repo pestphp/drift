@@ -23,7 +23,8 @@
         }
     },
     "require-dev": {
-        "pestphp/pest": "^0.1.5"
+        "pestphp/pest": "^0.1.5",
+        "phpunit/phpunit": "^9.0"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,

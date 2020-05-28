@@ -34,10 +34,13 @@ class PestPHPUnitRector extends AbstractPHPUnitToPestRector
         $canDeleteClass = true;
 
         // Add groups from class to whole file
-        $this->addNodeAfterNode(
-            $this->createFileScopeGroupCallFromNode($node),
-            $node
-        );
+        $classGroupNames = $this->getPhpDocGroupNames($node);
+        if (!empty($classGroupNames)) {
+            $this->addNodeAfterNode(
+                $this->createFileScopeGroupCall($classGroupNames),
+                $node
+            );
+        }
 
         foreach ($methods as $method) {
             if ($this->isTestMethod($method)) {
@@ -108,12 +111,6 @@ class PestPHPUnitRector extends AbstractPHPUnitToPestRector
         );
     }
 
-    private function createFileScopeGroupCallFromNode(Node $node): MethodCall
-    {
-        return $this->createFileScopeGroupCall(
-            $this->getPhpDocGroupNames($node)
-        );
-    }
 
     /**
      * @param string[] $groups
