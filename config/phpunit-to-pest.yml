@@ -1,2 +1,2 @@
 services:
-  Pest\Drift\PestPHPUnitRector: ~
+  Pest\Drift\PHPUnit\PestPHPUnitRector: ~

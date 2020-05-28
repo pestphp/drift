@@ -13,6 +13,9 @@ if (file_exists("{$localPath}/autoload.php")) {
 
 require_once "{$vendorPath}/autoload.php";
 
+
+$container = new \Symfony\Component\DependencyInjection\Container();
+
 $process = new \Symfony\Component\Process\Process([
     "{$vendorPath}/bin/rector",
     'process',
@@ -20,6 +23,8 @@ $process = new \Symfony\Component\Process\Process([
     '--dry-run',
     '--config',
     __DIR__ . '/../config/phpunit-to-pest.yml',
+    '--ansi',
+    '--no-progress-bar',
 ]);
 
 $process->run();
