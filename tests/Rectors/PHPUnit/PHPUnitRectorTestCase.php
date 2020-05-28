@@ -28,6 +28,26 @@ class PHPUnitRectorTestCase extends BaseRectorTestCase
         ];
     }
 
+    public function testCanConvertDataProviders(): void
+    {
+        $this->doTestFile("{$this->fixturePath()}/phpunit_data_providers_to_data_sets.php.inc");
+    }
+
+    public function testCanConvertExpectException(): void
+    {
+        $this->doTestFile("{$this->fixturePath()}/phpunit_expect_exception_to_pest_throws.php.inc");
+    }
+
+    public function testCanConvertSetUp(): void
+    {
+        $this->doTestFile("{$this->fixturePath()}/phpunit_setUp_to_pest_before_each.php.inc");
+    }
+
+    public function testCanConvertTearDown(): void
+    {
+        $this->doTestFile("{$this->fixturePath()}/phpunit_tearDown_to_pest_after_each.php.inc");
+    }
+
     protected function provideConfig(): string
     {
         return __DIR__ . '/../../config/phpunit_rectors.yml';
