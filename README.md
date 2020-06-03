@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="/art/banner.png" width="914" title="PEST Drift Banner">
+</p>
+
 # Drift
 
 ## Installation
