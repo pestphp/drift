@@ -101,6 +101,22 @@ class PestPHPUnitRector extends AbstractPHPUnitToPestRector
 
                 // Add the pest afterEach to the top of the file
                 array_unshift($nodesToAdd, $pestAfterEachNode);
+            } elseif ($this->isAfterClassMethod($method)) {
+                $pestAfterAllNode = $this->createPestAfterAll($method);
+
+                // Delete the phpunit afterClass method from the phpunit class
+                $this->removeNode($method);
+
+                // Add the pest afterAll to the top of the file
+                array_unshift($nodesToAdd, $pestAfterAllNode);
+            } elseif ($this->isBeforeClassMethod($method)) {
+                $pestBeforeAllNode = $this->createPestBeforeAll($method);
+
+                // Delete the phpunit beforeClass method from the phpunit class
+                $this->removeNode($method);
+
+                // Add the pest beforeAll to the top of the file
+                array_unshift($nodesToAdd, $pestBeforeAllNode);
             } else {
                 $canDeleteClass = false;
             }
@@ -357,6 +373,42 @@ class PestPHPUnitRector extends AbstractPHPUnitToPestRector
         return $this->builderFactory->funcCall(
             'uses',
             $traits,
+        );
+    }
+
+    private function isAfterClassMethod(ClassMethod $method): bool
+    {
+        /** @var PhpDocInfo $phpDoc */
+        $phpDoc = $method->getAttribute(AttributeKey::PHP_DOC_INFO);
+
+        return $phpDoc && $phpDoc->hasByName('afterClass');
+    }
+
+    private function createPestAfterAll(ClassMethod $method): FuncCall
+    {
+        return $this->builderFactory->funcCall(
+            'afterAll',
+            [
+                new Node\Expr\Closure(['stmts' => $method->stmts]),
+            ]
+        );
+    }
+
+    private function isBeforeClassMethod(ClassMethod $method): bool
+    {
+        /** @var PhpDocInfo $phpDoc */
+        $phpDoc = $method->getAttribute(AttributeKey::PHP_DOC_INFO);
+
+        return $phpDoc && $phpDoc->hasByName('beforeClass');
+    }
+
+    private function createPestBeforeAll(ClassMethod $method): FuncCall
+    {
+        return $this->builderFactory->funcCall(
+            'beforeAll',
+            [
+                new Node\Expr\Closure(['stmts' => $method->stmts]),
+            ]
         );
     }
 }

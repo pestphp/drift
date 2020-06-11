@@ -69,6 +69,16 @@ class PHPUnitRectorTestCase extends BaseRectorTestCase
         ];
     }
 
+    public function testCanConvertBeforeClass(): void
+    {
+        $this->doTestFile("{$this->fixturePath()}/phpunit_beforeClass_to_pest_beforeAll.php.inc");
+    }
+
+    public function testCanConvertAfterClass(): void
+    {
+        $this->doTestFile("{$this->fixturePath()}/phpunit_afterClass_to_pest_afterAll.php.inc");
+    }
+
     protected function provideConfig(): string
     {
         return __DIR__ . '/../../config/phpunit_rectors.yml';
