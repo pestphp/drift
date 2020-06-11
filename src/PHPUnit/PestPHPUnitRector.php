@@ -5,6 +5,7 @@ namespace Pest\Drift\PHPUnit;
 use Exception;
 use Nette\Utils\Strings;
 use PhpParser\Node;
+use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Stmt\Class_;
@@ -59,6 +60,8 @@ class PestPHPUnitRector extends AbstractPHPUnitToPestRector
                 $pestTestNode = $this->migrateDataProvider($method, $pestTestNode);
 
                 $pestTestNode = $this->migrateExpectException($method, $pestTestNode);
+
+                $pestTestNode = $this->migrateSkipCall($method, $pestTestNode);
 
                 // Delete the phpunit method from the phpunit class
                 $this->removeNode($method);
@@ -223,14 +226,14 @@ class PestPHPUnitRector extends AbstractPHPUnitToPestRector
     {
         /** @var Node\Stmt\Expression $stmt */
         foreach ($method->getStmts() as $key => $stmt) {
-            if ($this->isMethodCall($stmt->expr, 'this', 'expectException')) {
+            if (isset($stmt->expr) && $this->isMethodCall($stmt->expr, 'this', 'expectException')) {
                 return [$key, $stmt];
             }
         }
         return [null, null];
     }
 
-    private function migrateExpectException(ClassMethod $method, FuncCall $pestTestNode): FuncCall
+    private function migrateExpectException(ClassMethod $method, Expr $pestTestNode): Expr
     {
         [$expectExceptionCallKey, $expectExceptionCall] = $this->getExpectExceptionCall($method);
         if ($expectExceptionCall !== null) {
@@ -247,7 +250,7 @@ class PestPHPUnitRector extends AbstractPHPUnitToPestRector
         return $pestTestNode;
     }
 
-    private function migrateDataProvider(ClassMethod $method, FuncCall $pestTestNode): FuncCall
+    private function migrateDataProvider(ClassMethod $method, Expr $pestTestNode): Expr
     {
         $dataProvider = $this->getDataProviderName($method);
         if ($dataProvider !== null) {
@@ -256,7 +259,7 @@ class PestPHPUnitRector extends AbstractPHPUnitToPestRector
         return $pestTestNode;
     }
 
-    private function migratePhpDocGroup(ClassMethod $method, FuncCall $pestTestNode): FuncCall
+    private function migratePhpDocGroup(ClassMethod $method, Expr $pestTestNode): Expr
     {
         $groups = $this->getPhpDocGroupNames($method);
         if (!empty($groups)) {
@@ -293,5 +296,36 @@ class PestPHPUnitRector extends AbstractPHPUnitToPestRector
                 new Node\Expr\Closure(['stmts' => $method->stmts]),
             ]
         );
+    }
+
+    /**
+     * @return array|null[]
+     */
+    private function getMarkTestSkippedCall(ClassMethod $method)
+    {
+        /** @var Node\Stmt\Expression $stmt */
+        foreach ($method->getStmts() as $key => $stmt) {
+            if (isset($stmt->expr) && $this->isMethodCall($stmt->expr, 'this', 'markTestSkipped')) {
+                return [$key, $stmt];
+            }
+        }
+        return [null, null];
+    }
+
+    private function migrateSkipCall(ClassMethod $method, Expr $pestTestNode): Expr
+    {
+        [$expectExceptionCallKey, $expectExceptionCall] = $this->getMarkTestSkippedCall($method);
+        if ($expectExceptionCall !== null) {
+            // Remove markTestSkipped call from pest test class
+            $this->removeStmt($pestTestNode->args[1]->value, $expectExceptionCallKey);
+            // And add pest skip chain.
+            $pestTestNode = $this->createMethodCall(
+                $pestTestNode,
+                'skip',
+                $expectExceptionCall->expr->args
+            );
+        }
+
+        return $pestTestNode;
     }
 }

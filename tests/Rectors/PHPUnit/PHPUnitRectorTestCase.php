@@ -47,6 +47,11 @@ class PHPUnitRectorTestCase extends BaseRectorTestCase
         $this->doTestFile("{$this->fixturePath()}/phpunit_tearDown_to_pest_after_each.php.inc");
     }
 
+    public function testCanConvertSkip(): void
+    {
+        $this->doTestFile("{$this->fixturePath()}/phpunit_skip_to_pest_skip.php.inc");
+    }
+
     protected function provideConfig(): string
     {
         return __DIR__ . '/../../config/phpunit_rectors.yml';
