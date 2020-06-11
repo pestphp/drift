@@ -4,7 +4,7 @@ namespace Pest\Drift\Testing\Rectors\PHPUnit;
 
 use Pest\Drift\Testing\BaseRectorTestCase;
 
-class PHPUnitRectorTestCase extends BaseRectorTestCase
+class PHPUnitRectorTest extends BaseRectorTestCase
 {
     public function testCanConvertMethod(): void
     {

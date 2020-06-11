@@ -443,7 +443,7 @@ class PestPHPUnitRector extends AbstractPHPUnitToPestRector
     {
         foreach ($pestTestNodes as $pestTestNode) {
             foreach ($this->getPestClosure($pestTestNode)->getStmts() as $stmt) {
-                if (!($stmt->expr instanceof MethodCall)) {
+                if (!isset($stmt->expr) || !($stmt->expr instanceof MethodCall)) {
                     continue;
                 }
 
