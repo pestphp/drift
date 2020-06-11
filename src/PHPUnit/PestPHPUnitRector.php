@@ -5,8 +5,10 @@ namespace Pest\Drift\PHPUnit;
 use Exception;
 use Nette\Utils\Strings;
 use PhpParser\Node;
+use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Stmt\Class_;
+use PhpParser\Node\Stmt\ClassMethod;
 use PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocTagNode;
 use PHPUnit\Framework\TestCase;
 use Rector\BetterPhpDocParser\PhpDocInfo\PhpDocInfo;
@@ -32,8 +34,8 @@ class PestPHPUnitRector extends AbstractPHPUnitToPestRector
             return null;
         }
 
-        /** @var Node\Stmt\ClassMethod[] $methods */
-        $methods = $this->betterNodeFinder->findInstanceOf($node, Node\Stmt\ClassMethod::class);
+        /** @var ClassMethod[] $methods */
+        $methods = $this->betterNodeFinder->findInstanceOf($node, ClassMethod::class);
 
         $canDeleteClass = true;
 
@@ -52,27 +54,11 @@ class PestPHPUnitRector extends AbstractPHPUnitToPestRector
             if ($this->isTestMethod($method)) {
                 $pestTestNode = $this->createPestTest($method);
 
-                $groups = $this->getPhpDocGroupNames($method);
-                if (!empty($groups)) {
-                    $pestTestNode = $this->createMethodCall($pestTestNode, 'group', $groups);
-                }
+                $pestTestNode = $this->migratePhpDocGroup($method, $pestTestNode);
 
-                $dataProvider = $this->getDataProviderName($method);
-                if ($dataProvider !== null) {
-                    $pestTestNode = $this->createMethodCall($pestTestNode, 'with', [$dataProvider]);
-                }
+                $pestTestNode = $this->migrateDataProvider($method, $pestTestNode);
 
-                [$expectExceptionCallKey, $expectExceptionCall] = $this->getExpectExceptionCall($method);
-                if ($expectExceptionCall !== null) {
-                    // Remove expect exception call from pest test class
-                    $this->removeStmt($pestTestNode->args[1]->value, $expectExceptionCallKey);
-                    // And add pest throws chain.
-                    $pestTestNode = $this->createMethodCall(
-                        $pestTestNode,
-                        'throws',
-                        $expectExceptionCall->expr->args
-                    );
-                }
+                $pestTestNode = $this->migrateExpectException($method, $pestTestNode);
 
                 // Delete the phpunit method from the phpunit class
                 $this->removeNode($method);
@@ -87,6 +73,14 @@ class PestPHPUnitRector extends AbstractPHPUnitToPestRector
 
                 // Add the pest data provider to the top of the file
                 array_unshift($nodesToAdd, $pestDataProviderNode);
+            } elseif ($this->isSetUpMethod($method)) {
+                $pestSetUpNode = $this->createPestBeforeEach($method);
+
+                // Delete the phpunit setup method from the phpunit class
+                $this->removeNode($method);
+
+                // Add the pest beforeEach to the top of the file
+                array_unshift($nodesToAdd, $pestSetUpNode);
             } else {
                 $canDeleteClass = false;
             }
@@ -103,7 +97,7 @@ class PestPHPUnitRector extends AbstractPHPUnitToPestRector
         return $node;
     }
 
-    public function isTestMethod(Node\Stmt\ClassMethod $node): bool
+    public function isTestMethod(ClassMethod $node): bool
     {
         /** @var PhpDocInfo $phpDoc */
         $phpDoc = $node->getAttribute(AttributeKey::PHP_DOC_INFO);
@@ -133,9 +127,9 @@ class PestPHPUnitRector extends AbstractPHPUnitToPestRector
 
     /**
      * @param $method
-     * @return Node\Expr\FuncCall
+     * @return FuncCall
      */
-    private function createPestTest($method): Node\Expr\FuncCall
+    private function createPestTest($method): FuncCall
     {
         return $this->builderFactory->funcCall(
             'it',
@@ -162,7 +156,7 @@ class PestPHPUnitRector extends AbstractPHPUnitToPestRector
         );
     }
 
-    private function isDataProviderMethod(Node\Stmt\ClassMethod $method, array $methods)
+    private function isDataProviderMethod(ClassMethod $method, array $methods)
     {
         foreach ($methods as $lookUpMethod) {
             $dataProviderName = $this->getDataProviderName($lookUpMethod);
@@ -179,7 +173,7 @@ class PestPHPUnitRector extends AbstractPHPUnitToPestRector
         return false;
     }
 
-    private function createPestDataProvider(Node\Stmt\ClassMethod $method): Node\Expr\FuncCall
+    private function createPestDataProvider(ClassMethod $method): FuncCall
     {
         return $this->builderFactory->funcCall(
             'dataset',
@@ -190,7 +184,7 @@ class PestPHPUnitRector extends AbstractPHPUnitToPestRector
         );
     }
 
-    private function getDataProviderName(Node\Stmt\ClassMethod $method): ?string
+    private function getDataProviderName(ClassMethod $method): ?string
     {
         /** @var PhpDocInfo|null $phpDocInfo */
         $phpDocInfo = $method->getAttribute(AttributeKey::PHP_DOC_INFO);
@@ -214,10 +208,10 @@ class PestPHPUnitRector extends AbstractPHPUnitToPestRector
     }
 
     /**
-     * @param Node\Stmt\ClassMethod $method
+     * @param ClassMethod $method
      * @return array|null[]
      */
-    private function getExpectExceptionCall(Node\Stmt\ClassMethod $method)
+    private function getExpectExceptionCall(ClassMethod $method)
     {
         /** @var Node\Stmt\Expression $stmt */
         foreach ($method->getStmts() as $key => $stmt) {
@@ -226,5 +220,55 @@ class PestPHPUnitRector extends AbstractPHPUnitToPestRector
             }
         }
         return [null, null];
+    }
+
+    private function migrateExpectException(ClassMethod $method, FuncCall $pestTestNode): FuncCall
+    {
+        [$expectExceptionCallKey, $expectExceptionCall] = $this->getExpectExceptionCall($method);
+        if ($expectExceptionCall !== null) {
+            // Remove expect exception call from pest test class
+            $this->removeStmt($pestTestNode->args[1]->value, $expectExceptionCallKey);
+            // And add pest throws chain.
+            $pestTestNode = $this->createMethodCall(
+                $pestTestNode,
+                'throws',
+                $expectExceptionCall->expr->args
+            );
+        }
+
+        return $pestTestNode;
+    }
+
+    private function migrateDataProvider(ClassMethod $method, FuncCall $pestTestNode): FuncCall
+    {
+        $dataProvider = $this->getDataProviderName($method);
+        if ($dataProvider !== null) {
+            $pestTestNode = $this->createMethodCall($pestTestNode, 'with', [$dataProvider]);
+        }
+        return $pestTestNode;
+    }
+
+    private function migratePhpDocGroup(ClassMethod $method, FuncCall $pestTestNode): FuncCall
+    {
+        $groups = $this->getPhpDocGroupNames($method);
+        if (!empty($groups)) {
+            $pestTestNode = $this->createMethodCall($pestTestNode, 'group', $groups);
+        }
+        return $pestTestNode;
+    }
+
+    private function isSetUpMethod(ClassMethod $method): bool
+    {
+        return $this->isName($method, 'setUp');
+    }
+
+    private function createPestBeforeEach(ClassMethod $method): FuncCall
+    {
+        return $this->builderFactory->funcCall(
+            'beforeEach',
+            [
+                new Node\Expr\Closure(['stmts' => $method->stmts]),
+            ]
+        );
     }
 }
