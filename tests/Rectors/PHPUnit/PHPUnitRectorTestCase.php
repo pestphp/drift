@@ -52,6 +52,23 @@ class PHPUnitRectorTestCase extends BaseRectorTestCase
         $this->doTestFile("{$this->fixturePath()}/phpunit_skip_to_pest_skip.php.inc");
     }
 
+    /**
+     * @dataProvider provideDataForUses
+     */
+    public function testCanConvertUses(string $path): void
+    {
+        $this->doTestFile($path);
+    }
+
+    public function provideDataForUses(): array
+    {
+        return [
+            'One use' => ["{$this->fixturePath()}/phpunit_trait_to_pest_uses.php.inc"],
+            'Multiple uses, single line' => ["{$this->fixturePath()}/phpunit_trait_to_pest_uses_multiple.php.inc"],
+            'Multiple uses, multiple lines' => ["{$this->fixturePath()}/phpunit_trait_to_pest_uses_multiple_lines.php.inc"],
+        ];
+    }
+
     protected function provideConfig(): string
     {
         return __DIR__ . '/../../config/phpunit_rectors.yml';

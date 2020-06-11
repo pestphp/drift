@@ -10,6 +10,7 @@ use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
+use PhpParser\Node\Stmt\TraitUse;
 use PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocTagNode;
 use PHPUnit\Framework\TestCase;
 use Rector\BetterPhpDocParser\PhpDocInfo\PhpDocInfo;
@@ -50,6 +51,14 @@ class PestPHPUnitRector extends AbstractPHPUnitToPestRector
         }
 
         $nodesToAdd = [];
+
+        if (($traits = $node->getTraitUses()) !== []) {
+            $pestUsesNode = $this->createPestUses($traits);
+
+            // Add the pest afterEach to the top of the file
+            array_unshift($nodesToAdd, $pestUsesNode);
+        }
+
 
         foreach ($methods as $method) {
             if ($this->isTestMethod($method)) {
@@ -327,5 +336,27 @@ class PestPHPUnitRector extends AbstractPHPUnitToPestRector
         }
 
         return $pestTestNode;
+    }
+
+    /**
+     * @param TraitUse[] $traitUses
+     */
+    private function createPestUses(array $traitUses)
+    {
+        $traits = [];
+        foreach ($traitUses as $traitUse) {
+            $traits = array_merge($traits, $traitUse->traits);
+        }
+
+        $traits = array_map(function ($trait) {
+            return $this->createArg(
+                new Expr\ClassConstFetch($trait, 'class')
+            );
+        }, $traits);
+
+        return $this->builderFactory->funcCall(
+            'uses',
+            $traits,
+        );
     }
 }
