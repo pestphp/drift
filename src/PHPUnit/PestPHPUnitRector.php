@@ -74,13 +74,21 @@ class PestPHPUnitRector extends AbstractPHPUnitToPestRector
                 // Add the pest data provider to the top of the file
                 array_unshift($nodesToAdd, $pestDataProviderNode);
             } elseif ($this->isSetUpMethod($method)) {
-                $pestSetUpNode = $this->createPestBeforeEach($method);
+                $pestBeforeEachNode = $this->createPestBeforeEach($method);
 
                 // Delete the phpunit setup method from the phpunit class
                 $this->removeNode($method);
 
                 // Add the pest beforeEach to the top of the file
-                array_unshift($nodesToAdd, $pestSetUpNode);
+                array_unshift($nodesToAdd, $pestBeforeEachNode);
+            } elseif ($this->isTearDownMethod($method)) {
+                $pestAfterEachNode = $this->createPestAfterEach($method);
+
+                // Delete the phpunit tearDown method from the phpunit class
+                $this->removeNode($method);
+
+                // Add the pest afterEach to the top of the file
+                array_unshift($nodesToAdd, $pestAfterEachNode);
             } else {
                 $canDeleteClass = false;
             }
@@ -266,6 +274,21 @@ class PestPHPUnitRector extends AbstractPHPUnitToPestRector
     {
         return $this->builderFactory->funcCall(
             'beforeEach',
+            [
+                new Node\Expr\Closure(['stmts' => $method->stmts]),
+            ]
+        );
+    }
+
+    private function isTearDownMethod(ClassMethod $method): bool
+    {
+        return $this->isName($method, 'tearDown');
+    }
+
+    private function createPestAfterEach(ClassMethod $method): FuncCall
+    {
+        return $this->builderFactory->funcCall(
+            'afterEach',
             [
                 new Node\Expr\Closure(['stmts' => $method->stmts]),
             ]
