@@ -6,6 +6,7 @@ use Exception;
 use Nette\Utils\Strings;
 use PhpParser\Node;
 use PhpParser\Node\Expr;
+use PhpParser\Node\Expr\Closure;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Stmt\Class_;
@@ -50,13 +51,15 @@ class PestPHPUnitRector extends AbstractPHPUnitToPestRector
             );
         }
 
-        $nodesToAdd = [];
+
+        $pestMethodNodes = [];
+        $pestHelpers = [];
+        $pestTestNodes = [];
 
         if (($traits = $node->getTraitUses()) !== []) {
             $pestUsesNode = $this->createPestUses($traits);
 
-            // Add the pest afterEach to the top of the file
-            array_unshift($nodesToAdd, $pestUsesNode);
+            $pestMethodNodes[] = $pestUsesNode;
         }
 
 
@@ -72,63 +75,49 @@ class PestPHPUnitRector extends AbstractPHPUnitToPestRector
 
                 $pestTestNode = $this->migrateSkipCall($method, $pestTestNode);
 
-                // Delete the phpunit method from the phpunit class
-                $this->removeNode($method);
-
                 // Add the pest test to the file
-                $nodesToAdd[] = $pestTestNode;
+                $pestTestNodes[] = $pestTestNode;
             } elseif ($this->isDataProviderMethod($method, $methods)) {
                 $pestDataProviderNode = $this->createPestDataProvider($method);
 
-                // Delete the phpunit data provider method from the phpunit class
-                $this->removeNode($method);
-
-                // Add the pest data provider to the top of the file
-                array_unshift($nodesToAdd, $pestDataProviderNode);
+                $pestMethodNodes[] = $pestDataProviderNode;
             } elseif ($this->isSetUpMethod($method)) {
                 $pestBeforeEachNode = $this->createPestBeforeEach($method);
 
-                // Delete the phpunit setup method from the phpunit class
-                $this->removeNode($method);
-
-                // Add the pest beforeEach to the top of the file
-                array_unshift($nodesToAdd, $pestBeforeEachNode);
+                $pestMethodNodes[] = $pestBeforeEachNode;
             } elseif ($this->isTearDownMethod($method)) {
                 $pestAfterEachNode = $this->createPestAfterEach($method);
 
-                // Delete the phpunit tearDown method from the phpunit class
-                $this->removeNode($method);
-
-                // Add the pest afterEach to the top of the file
-                array_unshift($nodesToAdd, $pestAfterEachNode);
+                $pestMethodNodes[] = $pestAfterEachNode;
             } elseif ($this->isAfterClassMethod($method)) {
                 $pestAfterAllNode = $this->createPestAfterAll($method);
 
-                // Delete the phpunit afterClass method from the phpunit class
-                $this->removeNode($method);
-
-                // Add the pest afterAll to the top of the file
-                array_unshift($nodesToAdd, $pestAfterAllNode);
+                $pestMethodNodes[] = $pestAfterAllNode;
             } elseif ($this->isBeforeClassMethod($method)) {
                 $pestBeforeAllNode = $this->createPestBeforeAll($method);
 
-                // Delete the phpunit beforeClass method from the phpunit class
-                $this->removeNode($method);
-
-                // Add the pest beforeAll to the top of the file
-                array_unshift($nodesToAdd, $pestBeforeAllNode);
+                $pestMethodNodes[] = $pestBeforeAllNode;
             } else {
-                $canDeleteClass = false;
+                $pestHelperNode = $this->createPestHelperMethod($method);
+                $pestHelpers[] = $this->getName($pestHelperNode);
+                $pestMethodNodes[] = $pestHelperNode;
             }
         }
 
-        foreach ($nodesToAdd as $nodeToAdd) {
-            $this->addNodeAfterNode($nodeToAdd, $node);
+        // Add all pest method nodes at the top of file
+        foreach ($pestMethodNodes as $methodNode) {
+            $this->addNodeAfterNode($methodNode, $node);
         }
 
-        if ($canDeleteClass) {
-            $this->removeNode($node);
+        // Change phpunit method calls to pest helper calls
+        $pestTestNodes = $this->migratePhpUnitMethodHelpers($pestTestNodes, $pestHelpers);
+
+        // Add pest tests
+        foreach ($pestTestNodes as $testNode) {
+            $this->addNodeAfterNode($testNode, $node);
         }
+
+        $this->removeNode($node);
 
         return $node;
     }
@@ -171,7 +160,7 @@ class PestPHPUnitRector extends AbstractPHPUnitToPestRector
             'it',
             [
                 $this->getName($method),
-                new Node\Expr\Closure([
+                new Closure([
                     'stmts' => $method->stmts,
                     'params' => $method->params,
                 ]),
@@ -215,7 +204,7 @@ class PestPHPUnitRector extends AbstractPHPUnitToPestRector
             'dataset',
             [
                 $this->getName($method),
-                new Node\Expr\Closure(['stmts' => $method->stmts]),
+                new Closure(['stmts' => $method->stmts]),
             ]
         );
     }
@@ -303,7 +292,7 @@ class PestPHPUnitRector extends AbstractPHPUnitToPestRector
         return $this->builderFactory->funcCall(
             'beforeEach',
             [
-                new Node\Expr\Closure(['stmts' => $method->stmts]),
+                new Closure(['stmts' => $method->stmts]),
             ]
         );
     }
@@ -318,7 +307,7 @@ class PestPHPUnitRector extends AbstractPHPUnitToPestRector
         return $this->builderFactory->funcCall(
             'afterEach',
             [
-                new Node\Expr\Closure(['stmts' => $method->stmts]),
+                new Closure(['stmts' => $method->stmts]),
             ]
         );
     }
@@ -337,12 +326,26 @@ class PestPHPUnitRector extends AbstractPHPUnitToPestRector
         return [null, null];
     }
 
+    private function getInnerVariable(Expr $expr): Expr
+    {
+        if (isset($expr->var)) {
+            return $this->getInnerVariable($expr->var);
+        }
+
+        return $expr;
+    }
+
+    private function getPestClosure(Expr $pestTest): Closure
+    {
+        return $this->getInnerVariable($pestTest)->args[1]->value;
+    }
+
     private function migrateSkipCall(ClassMethod $method, Expr $pestTestNode): Expr
     {
         [$expectExceptionCallKey, $expectExceptionCall] = $this->getMarkTestSkippedCall($method);
         if ($expectExceptionCall !== null) {
             // Remove markTestSkipped call from pest test class
-            $this->removeStmt($pestTestNode->args[1]->value, $expectExceptionCallKey);
+            $this->removeStmt($this->getPestClosure($pestTestNode), $expectExceptionCallKey);
             // And add pest skip chain.
             $pestTestNode = $this->createMethodCall(
                 $pestTestNode,
@@ -389,7 +392,7 @@ class PestPHPUnitRector extends AbstractPHPUnitToPestRector
         return $this->builderFactory->funcCall(
             'afterAll',
             [
-                new Node\Expr\Closure(['stmts' => $method->stmts]),
+                new Closure(['stmts' => $method->stmts]),
             ]
         );
     }
@@ -407,8 +410,52 @@ class PestPHPUnitRector extends AbstractPHPUnitToPestRector
         return $this->builderFactory->funcCall(
             'beforeAll',
             [
-                new Node\Expr\Closure(['stmts' => $method->stmts]),
+                new Closure(['stmts' => $method->stmts]),
             ]
         );
     }
+
+    private function createPestHelperMethod(ClassMethod $method): Node\Stmt\Function_
+    {
+        $stmts = array_map(function (Node\Stmt\Expression $expression) {
+            if (!($expression->expr instanceof MethodCall)) {
+                return $expression;
+            }
+
+            if (!$this->isName($expression->expr->var, 'this')) {
+                return $expression;
+            }
+
+            $expression->expr->var = $this->createFuncCall('test');
+            return $expression;
+        }, $method->getStmts());
+
+        return $this->builderFactory->function($this->getName($method))
+            ->addStmts($stmts)
+            ->getNode();
+    }
+
+    /**
+     * @param Expr[] $pestTestNodes
+     * @param string[] $pestHelpers
+     */
+    private function migratePhpUnitMethodHelpers(array $pestTestNodes, array $pestHelpers): array
+    {
+        foreach ($pestTestNodes as $pestTestNode) {
+            foreach ($this->getPestClosure($pestTestNode)->getStmts() as $stmt) {
+                if (!($stmt->expr instanceof MethodCall)) {
+                    continue;
+                }
+
+                if (!in_array($this->getName($stmt->expr->name), $pestHelpers)) {
+                    continue;
+                }
+
+                $stmt->expr = $this->createFuncCall($stmt->expr->name);
+            }
+        }
+
+        return $pestTestNodes;
+    }
+
 }
