@@ -2,7 +2,6 @@
 
 namespace Pest\Drift\Testing\Rectors\PHPUnit;
 
-use Iterator;
 use Pest\Drift\Testing\BaseRectorTestCase;
 
 class PHPUnitRectorTestCase extends BaseRectorTestCase

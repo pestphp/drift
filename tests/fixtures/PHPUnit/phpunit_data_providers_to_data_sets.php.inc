@@ -4,7 +4,7 @@ use PHPUnit\Framework\TestCase;
 class DataProviderTest extends TestCase
 {
     /**
-     * @dataProvider getNames
+     * @dataProvider getEmails
      */
     public function testEmail($email)
     {
@@ -23,10 +23,12 @@ class DataProviderTest extends TestCase
 -----
 <?php
 use PHPUnit\Framework\TestCase;
-dataset('getEmails', [
-    'enunomaduro@gmail.com',
-    'other@example.com'
-]);
+dataset('getEmails', function () {
+    return [
+        ['enunomaduro@gmail.com'],
+        ['other@example.com']
+    ];
+});
 it('testEmail', function ($email) {
     $this->assertNotEmpty($email);
 })->with('getEmails');
