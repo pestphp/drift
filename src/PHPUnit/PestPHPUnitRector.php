@@ -62,6 +62,18 @@ class PestPHPUnitRector extends AbstractPHPUnitToPestRector
                     $pestTestNode = $this->createMethodCall($pestTestNode, 'with', [$dataProvider]);
                 }
 
+                [$expectExceptionCallKey, $expectExceptionCall] = $this->getExpectExceptionCall($method);
+                if ($expectExceptionCall !== null) {
+                    // Remove expect exception call from pest test class
+                    $this->removeStmt($pestTestNode->args[1]->value, $expectExceptionCallKey);
+                    // And add pest throws chain.
+                    $pestTestNode = $this->createMethodCall(
+                        $pestTestNode,
+                        'throws',
+                        $expectExceptionCall->expr->args
+                    );
+                }
+
                 // Delete the phpunit method from the phpunit class
                 $this->removeNode($method);
 
@@ -199,5 +211,20 @@ class PestPHPUnitRector extends AbstractPHPUnitToPestRector
         }
 
         return $dataProviders[0];
+    }
+
+    /**
+     * @param Node\Stmt\ClassMethod $method
+     * @return array|null[]
+     */
+    private function getExpectExceptionCall(Node\Stmt\ClassMethod $method)
+    {
+        /** @var Node\Stmt\Expression $stmt */
+        foreach ($method->getStmts() as $key => $stmt) {
+            if ($this->isMethodCall($stmt->expr, 'this', 'expectException')) {
+                return [$key, $stmt];
+            }
+        }
+        return [null, null];
     }
 }
