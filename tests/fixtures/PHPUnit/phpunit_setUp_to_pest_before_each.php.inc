@@ -19,10 +19,10 @@ class SetUpTest extends TestCase
 -----
 <?php
 use PHPUnit\Framework\TestCase;
-
 beforeEach(function () {
     $this->stack = [];
 });
 it('testEmpty', function () {
     $this->assertTrue(empty($this->stack));
 });
+?>

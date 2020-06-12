@@ -20,7 +20,7 @@ $process = new \Symfony\Component\Process\Process([
     "{$vendorPath}/bin/rector",
     'process',
     (new \Symfony\Component\Console\Input\ArgvInput())->getFirstArgument(),
-    '--dry-run',
+    //'--dry-run',
     '--config',
     __DIR__ . '/../config/phpunit-to-pest.yml',
     '--ansi',

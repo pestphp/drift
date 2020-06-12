@@ -14,13 +14,13 @@ class TearDownTest extends TestCase
     }
 }
 ?>
-    -----
+-----
 <?php
 use PHPUnit\Framework\TestCase;
-
 afterEach(function () {
     echo "works";
 });
 it('testTearDown', function () {
     $this->assertTrue(true);
 });
+?>

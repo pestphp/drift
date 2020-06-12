@@ -1,12 +1,17 @@
 <?php
 use PHPUnit\Framework\TestCase;
 
-class DataProviderTest extends TestCase
+class DataProviderHelperMethodTest extends TestCase
 {
     /**
      * @dataProvider getEmails
      */
     public function testEmail($email)
+    {
+        $this->assertWrapper($email);
+    }
+
+    public function assertWrapper($email)
     {
         $this->assertNotEmpty($email);
     }
@@ -29,7 +34,11 @@ dataset('getEmails', function () {
         ['other@example.com']
     ];
 });
+function assertWrapper($email)
+{
+    test()->assertNotEmpty($email);
+}
 it('testEmail', function ($email) {
-    $this->assertNotEmpty($email);
+    assertWrapper($email);
 })->with('getEmails');
 ?>
