@@ -84,6 +84,16 @@ class PHPUnitRectorTest extends BaseRectorTestCase
         $this->doTestFile("{$this->fixturePath()}/phpunit_method_to_pest_helper.php.inc");
     }
 
+    public function testCanIgnoreHelperMethodOverridden(): void
+    {
+        $this->doTestFile("{$this->fixturePath()}/phpunit_method_to_pest_helper_with_override_method.php.inc");
+    }
+
+    public function testCanConvertCustomTestCase(): void
+    {
+        $this->doTestFile("{$this->fixturePath()}/phpunit_custom_test_case_to_pest_uses.php.inc");
+    }
+
     protected function provideConfig(): string
     {
         return __DIR__ . '/../../config/phpunit_rectors.yml';
