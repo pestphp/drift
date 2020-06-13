@@ -1,32 +1,61 @@
 #!/usr/bin/env php
-<?php declare(strict_types=1);
+<?php
 
-// Used when Drift is required using composer.
-$vendorPath = realpath(__DIR__ . '/../../../../vendor');
+declare(strict_types=1);
 
-// Used when Drift maintainers are running Drift tests.
-$localPath = realpath(__DIR__ . '/../vendor');
+/*
+|--------------------------------------------------------------------------
+| Register The Auto Loader
+|--------------------------------------------------------------------------
+|
+*/
 
-if (file_exists("{$localPath}/autoload.php")) {
-    $vendorPath = $localPath;
-}
+$vendorPath = guessVendorPath();
 
 require_once "{$vendorPath}/autoload.php";
 
+$container = new \Pest\Drift\Application($vendorPath);
 
-$container = new \Symfony\Component\DependencyInjection\Container();
+/*
+|--------------------------------------------------------------------------
+| Run The Application
+|--------------------------------------------------------------------------
+|
+*/
 
-$process = new \Symfony\Component\Process\Process([
-    "{$vendorPath}/bin/rector",
-    'process',
-    (new \Symfony\Component\Console\Input\ArgvInput())->getFirstArgument(),
-    //'--dry-run',
-    '--config',
-    __DIR__ . '/../config/phpunit-to-pest.yml',
-    '--ansi',
-    '--no-progress-bar',
-]);
+/** @var \Pest\Drift\Kernel $kernel */
+$kernel = $container->get(\Pest\Drift\Kernel::class);
 
-$process->run();
+$status = $kernel->handle(
+    new Symfony\Component\Console\Input\ArgvInput,
+    new Symfony\Component\Console\Output\ConsoleOutput
+);
 
-(new \Symfony\Component\Console\Output\ConsoleOutput())->write($process);
+/*
+|--------------------------------------------------------------------------
+| Shutdown The Application
+|--------------------------------------------------------------------------
+|
+*/
+
+$kernel->terminate();
+
+exit($status);
+
+
+function guessVendorPath(): string
+{
+    $possibleVendorPaths = [
+        __DIR__ . '/../vendor',
+        __DIR__ . '/../../..',
+    ];
+
+    foreach ($possibleVendorPaths as $possibleVendorPath) {
+        if (file_exists("{$possibleVendorPath}/autoload.php")) {
+            return $possibleVendorPath;
+        }
+    }
+
+    throw new Exception("Could not find the vendor folder.");
+}
+
