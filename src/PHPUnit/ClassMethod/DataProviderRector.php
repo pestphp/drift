@@ -1,7 +1,8 @@
 <?php
 
-namespace Pest\Drift\PHPUnit;
+namespace Pest\Drift\PHPUnit\ClassMethod;
 
+use Pest\Drift\PHPUnit\AbstractPHPUnitToPestRector;
 use PhpParser\Node;
 use PhpParser\Node\Expr\Closure;
 use PhpParser\Node\Expr\FuncCall;
@@ -11,6 +12,7 @@ use PHPUnit\Framework\TestCase;
 
 class DataProviderRector extends AbstractPHPUnitToPestRector
 {
+
     public function getNodeTypes(): array
     {
         return [Class_::class];

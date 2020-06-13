@@ -1,16 +1,18 @@
 services:
-  Pest\Drift\PHPUnit\MethodToPestTestRector: ~
-  Pest\Drift\PHPUnit\TraitUsesToUsesRector: ~
-  Pest\Drift\PHPUnit\SetUpToBeforeRector: ~
-  Pest\Drift\PHPUnit\TearDownToAfterEachRector: ~
-  Pest\Drift\PHPUnit\AfterClassToAfterAllRector: ~
-  Pest\Drift\PHPUnit\BeforeClassToBeforeAllRector: ~
-  Pest\Drift\PHPUnit\PhpDocGroupOnClassToFileScopeGroupRector: ~
-  Pest\Drift\PHPUnit\DataProviderRector: ~
-  Pest\Drift\PHPUnit\HelperMethodRector: ~
-  Pest\Drift\PHPUnit\CustomTestCaseToUsesRector: ~
+  Pest\Drift\PHPUnit\ClassMethod\MethodToPestTestRector: ~
+  Pest\Drift\PHPUnit\Class_\TraitUsesToUsesRector: ~
 
-  Pest\Drift\PHPUnit\RemovePHPUnitClassRector: ~
+  Pest\Drift\PHPUnit\ClassMethod\SetUpToBeforeEachRector: ~
+  Pest\Drift\PHPUnit\ClassMethod\TearDownToAfterEachRector: ~
+  Pest\Drift\PHPUnit\ClassMethod\AfterClassToAfterAllRector: ~
+  Pest\Drift\PHPUnit\ClassMethod\BeforeClassToBeforeAllRector: ~
+
+  Pest\Drift\PHPUnit\Class_\PhpDocGroupOnClassToFileScopeGroupRector: ~
+  Pest\Drift\PHPUnit\ClassMethod\DataProviderRector: ~
+  Pest\Drift\PHPUnit\ClassMethod\HelperMethodRector: ~
+  Pest\Drift\PHPUnit\Class_\CustomTestCaseToUsesRector: ~
+
+  Pest\Drift\PHPUnit\Class_\RemovePHPUnitClassRector: ~
   Pest\Drift\Pest\PestCollectingRector: ~
 
 

@@ -1,13 +1,16 @@
 <?php
 
-namespace Pest\Drift\PHPUnit;
+namespace Pest\Drift\PHPUnit\ClassMethod;
 
+use Pest\Drift\PHPUnit\AbstractPHPUnitToPestRector;
 use PhpParser\Node;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\MethodCall;
+use PhpParser\Node\Scalar\Encapsed;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
 use PHPUnit\Framework\TestCase;
+use Rector\Core\Exception\ShouldNotHappenException;
 use Rector\NodeTypeResolver\Node\AttributeKey;
 use ReflectionClass;
 
@@ -97,18 +100,35 @@ class HelperMethodRector extends AbstractPHPUnitToPestRector
 
     private function migratePhpUnitMethodHelpers(Node $pestNode, ClassMethod $methodNode): void
     {
-        /** @var MethodCall[] $pestMethodCalls */
-        $pestMethodCalls = $this->betterNodeFinder->findInstanceOf($pestNode, MethodCall::class);
         $methodName = $this->getName($methodNode);
 
-        foreach ($pestMethodCalls as $pestMethodCall) {
-            if (!$this->isName($pestMethodCall->name, $methodName)) {
-                continue;
+        if ($pestNode instanceof Node\Stmt\Function_) {
+            $stmts = $pestNode->getStmts();
+        } elseif ($pestNode instanceof Node\Stmt\Expression) {
+            $stmts = $pestNode->expr->args[1]->value->stmts;
+        } else {
+            throw new ShouldNotHappenException("Can't this node yet.");
+        }
+
+        $this->traverseNodesWithCallable($stmts, function (Node $node) use ($methodName) {
+            if (! $node instanceof MethodCall) {
+                return null;
             }
 
-            // TODO: see if we can find another solution then replaceNode.
-            $this->replaceNode($pestMethodCall, $this->createFuncCall($methodName));
-        }
+            $parentNode = $node->getAttribute(AttributeKey::PARENT_NODE);
+
+            // probably your case to skip
+            // https://github.com/rectorphp/rector/blob/master/docs/nodes_overview.md#phpparsernodescalarencapsed
+            if ($parentNode instanceof Encapsed) {
+                return null;
+            }
+
+            if (!$this->isName($node->name, $methodName)) {
+                return null;
+            }
+
+            return $this->createFuncCall($methodName);
+        });
     }
 
     /**

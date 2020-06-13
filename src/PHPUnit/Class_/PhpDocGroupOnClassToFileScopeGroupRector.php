@@ -1,7 +1,8 @@
 <?php
 
-namespace Pest\Drift\PHPUnit;
+namespace Pest\Drift\PHPUnit\Class_;
 
+use Pest\Drift\PHPUnit\AbstractPHPUnitToPestRector;
 use PhpParser\Node;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Stmt\Class_;

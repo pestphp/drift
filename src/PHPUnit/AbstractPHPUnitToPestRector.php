@@ -4,12 +4,14 @@ namespace Pest\Drift\PHPUnit;
 
 use Exception;
 use Pest\Drift\PestCollector;
+use PhpParser\Node;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Closure;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
 use PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocTagNode;
+use PHPUnit\Framework\TestCase;
 use Rector\BetterPhpDocParser\PhpDocInfo\PhpDocInfo;
 use Rector\Core\Rector\AbstractRector;
 use Rector\Core\RectorDefinition\RectorDefinition;
@@ -30,6 +32,16 @@ abstract class AbstractPHPUnitToPestRector extends AbstractRector
         return new RectorDefinition(
             'Migrate PHPUnit behavior to Pest'
         );
+    }
+
+    public function isInPhpUnitBehavior(Node $node): bool
+    {
+        $classNode = $node->getAttribute(AttributeKey::CLASS_NODE);
+        if ($classNode === null) {
+            return false;
+        }
+
+        return $this->isObjectType($classNode, TestCase::class);
     }
 
     public function createUsesCall(): FuncCall

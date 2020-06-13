@@ -1,9 +1,10 @@
 <?php
 
-namespace Pest\Drift\PHPUnit;
+namespace Pest\Drift\PHPUnit\ClassMethod;
 
 use Exception;
 use Nette\Utils\Strings;
+use Pest\Drift\PestCollector;
 use PhpParser\Node;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Closure;
@@ -15,45 +16,27 @@ use PHPUnit\Framework\TestCase;
 use Rector\BetterPhpDocParser\PhpDocInfo\PhpDocInfo;
 use Rector\NodeTypeResolver\Node\AttributeKey;
 
-class MethodToPestTestRector extends AbstractPHPUnitToPestRector
+class MethodToPestTestRector extends AbstractClassMethodRector
 {
-    public function getNodeTypes(): array
-    {
-        return [Class_::class];
-    }
+    public ?string $type = PestCollector::TEST_METHODS;
 
-    /**
-     * @throws Exception
-     */
-    public function refactor(Node $node): ?Node
+    public function classMethodRefactor(Class_ $classNode, ClassMethod $classMethodNode): ?Node
     {
-        if (!$this->isObjectType($node, TestCase::class)) {
+        if (!$this->isTestMethod($classMethodNode)) {
             return null;
         }
 
-        /** @var ClassMethod[] $methods */
-        $methods = $this->betterNodeFinder->findInstanceOf($node, ClassMethod::class);
+        $pestTestNode = $this->createPestTest($classMethodNode);
 
-        foreach ($methods as $method) {
-            if (!$this->isTestMethod($method)) {
-                continue;
-            }
+        $pestTestNode = $this->migratePhpDocGroup($classMethodNode, $pestTestNode);
 
-            $pestTestNode = $this->createPestTest($method);
+        $pestTestNode = $this->migrateDataProvider($classMethodNode, $pestTestNode);
 
-            $pestTestNode = $this->migratePhpDocGroup($method, $pestTestNode);
+        $pestTestNode = $this->migrateExpectException($classMethodNode, $pestTestNode);
 
-            $pestTestNode = $this->migrateDataProvider($method, $pestTestNode);
+        $pestTestNode = $this->migrateSkipCall($classMethodNode, $pestTestNode);
 
-            $pestTestNode = $this->migrateExpectException($method, $pestTestNode);
-
-            $pestTestNode = $this->migrateSkipCall($method, $pestTestNode);
-
-            $this->removeNode($method);
-            $this->pestCollector->addTestMethod($node, $pestTestNode);
-        }
-
-        return $node;
+        return $pestTestNode;
     }
 
     public function isTestMethod(ClassMethod $node): bool
