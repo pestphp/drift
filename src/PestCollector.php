@@ -11,17 +11,17 @@ use PhpParser\Node\Stmt\Function_;
 class PestCollector
 {
     public $nodes = [];
-    private const DATA_PROVIDER = 'data_provider';
-    private const TEST_METHODS = 'test_methods';
-    private const FILE_SCOPE_GROUP = 'file_scope_group';
-    private const AFTER_ALL = 'after_all';
-    private const BEFORE_ALL = 'before_all';
-    private const BEFORE_EACH = 'before_each';
-    private const AFTER_EACH = 'after_each';
-    private const USES = 'uses';
-    private const HELPER = 'helper';
+    public const DATA_PROVIDER = 'data_provider';
+    public const TEST_METHODS = 'test_methods';
+    public const FILE_SCOPE_GROUP = 'file_scope_group';
+    public const AFTER_ALL = 'after_all';
+    public const BEFORE_ALL = 'before_all';
+    public const BEFORE_EACH = 'before_each';
+    public const AFTER_EACH = 'after_each';
+    public const USES = 'uses';
+    public const HELPER = 'helper';
 
-    private function addExprToArray(string $type, Node $node, Node $newNode)
+    public function addExprToArray(string $type, Node $node, Node $newNode)
     {
         $this->nodes[spl_object_hash($node)][$type][] = $newNode instanceof Stmt ? $newNode : new Expression($newNode);;
     }
@@ -94,13 +94,5 @@ class PestCollector
         );
 
         return $sortedNodes;
-    }
-
-    /**
-     * @return Expression[]
-     */
-    public function getTestMethods(Node $node): array
-    {
-        return ($this->nodes[spl_object_hash($node)] ?? [])[self::TEST_METHODS] ?? [];
     }
 }

@@ -3,7 +3,7 @@
     "description": "Drifting you to Pest",
     "type": "library",
     "require": {
-        "php": "^7.3",
+        "php": "^7.4",
         "rector/rector": "^0.7.26",
         "pestphp/pest": "^0.2"
     },
