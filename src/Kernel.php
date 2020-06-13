@@ -26,7 +26,7 @@ class Kernel
     {
         $this->bootstrap();
 
-        $kernelApplication = new \Symfony\Component\Console\Application('PHP Insights App');
+        $kernelApplication = new \Symfony\Component\Console\Application('Drift - A Pest migration tool');
 
         $kernelApplication->setCommandLoader(new ContainerCommandLoader($this->container, [
             'migrate' => MigrateCommand::class,
