@@ -36,6 +36,8 @@ class MethodToPestTestRector extends AbstractClassMethodRector
 
         $pestTestNode = $this->migrateSkipCall($classMethodNode, $pestTestNode);
 
+        $pestTestNode = $this->migratePhpDocDepends($classMethodNode, $pestTestNode);
+
         return $pestTestNode;
     }
 
@@ -65,6 +67,22 @@ class MethodToPestTestRector extends AbstractClassMethodRector
         return array_map(static function (PhpDocTagNode $tag): string {
             return (string) $tag->value;
         }, $phpDocInfo->getTagsByName('group'));
+    }
+
+    /**
+     * @return string[]|null
+     */
+    public function getPhpDocDependsNames(Node $node): ?array
+    {
+        /** @var PhpDocInfo|null $phpDocInfo */
+        $phpDocInfo = $node->getAttribute(AttributeKey::PHP_DOC_INFO);
+        if ($phpDocInfo === null) {
+            return null;
+        }
+
+        return array_map(static function (PhpDocTagNode $tag): string {
+            return (string) $tag->value;
+        }, $phpDocInfo->getTagsByName('depends'));
     }
 
     /**
@@ -131,6 +149,15 @@ class MethodToPestTestRector extends AbstractClassMethodRector
         $groups = $this->getPhpDocGroupNames($method);
         if (!empty($groups)) {
             $pestTestNode = $this->createMethodCall($pestTestNode, 'group', $groups);
+        }
+        return $pestTestNode;
+    }
+
+    private function migratePhpDocDepends(ClassMethod $method, Expr $pestTestNode): Expr
+    {
+        $depends = $this->getPhpDocDependsNames($method);
+        if (!empty($depends)) {
+            $pestTestNode = $this->createMethodCall($pestTestNode, 'depends', $depends);
         }
         return $pestTestNode;
     }
