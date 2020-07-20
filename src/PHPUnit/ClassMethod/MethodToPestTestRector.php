@@ -92,7 +92,7 @@ class MethodToPestTestRector extends AbstractClassMethodRector
     private function createPestTest($method): FuncCall
     {
         return $this->builderFactory->funcCall(
-            'it',
+            'test',
             [
                 $this->getName($method),
                 new Closure([
