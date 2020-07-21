@@ -3,11 +3,17 @@
 namespace Pest\Drift\Testing\Rectors\PHPUnit\ClassMethod;
 
 use Iterator;
+use Pest\Drift\PHPUnit\ClassMethod\AfterClassToAfterAllRector;
 use Pest\Drift\Testing\Rectors\PHPUnit\BasePHPUnitRectorTest;
 use Symplify\SmartFileSystem\SmartFileInfo;
 
 class AfterClassToAfterAllRectorTest extends BasePHPUnitRectorTest
 {
+    protected function getRectorClass(): string
+    {
+        return AfterClassToAfterAllRector::class;
+    }
+
     /**
      * @dataProvider provideData()
      */

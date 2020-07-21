@@ -3,11 +3,17 @@
 namespace Pest\Drift\Testing\Rectors\PHPUnit\Class_;
 
 use Iterator;
+use Pest\Drift\PHPUnit\Class_\RemovePHPUnitClassRector;
 use Pest\Drift\Testing\Rectors\PHPUnit\BasePHPUnitRectorTest;
 use Symplify\SmartFileSystem\SmartFileInfo;
 
 class RemovePHPUnitClassRectorTest extends BasePHPUnitRectorTest
 {
+    protected function getRectorClass(): string
+    {
+        return RemovePHPUnitClassRector::class;
+    }
+
     /**
      * @dataProvider provideData()
      */

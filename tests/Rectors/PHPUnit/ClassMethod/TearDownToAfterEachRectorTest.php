@@ -3,11 +3,17 @@
 namespace Pest\Drift\Testing\Rectors\PHPUnit\ClassMethod;
 
 use Iterator;
+use Pest\Drift\PHPUnit\ClassMethod\TearDownToAfterEachRector;
 use Pest\Drift\Testing\Rectors\PHPUnit\BasePHPUnitRectorTest;
 use Symplify\SmartFileSystem\SmartFileInfo;
 
 class TearDownToAfterEachRectorTest extends BasePHPUnitRectorTest
 {
+    protected function getRectorClass(): string
+    {
+        return TearDownToAfterEachRector::class;
+    }
+
     /**
      * @dataProvider provideData()
      */
