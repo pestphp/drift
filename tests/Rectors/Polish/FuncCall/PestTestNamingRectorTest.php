@@ -3,16 +3,23 @@
 namespace Pest\Drift\Testing\Rectors\Polish\FuncCall;
 
 use Iterator;
-use Pest\Drift\Testing\Rectors\PHPUnit\BasePHPUnitRectorTest;
+use Pest\Drift\Pest\FuncCall\PestTestNamingRector;
+use Pest\Drift\Testing\Rectors\Polish\BasePolishRectorTest;
+use Symplify\SmartFileSystem\SmartFileInfo;
 
-class PestTestNamingRectorTest extends BasePHPUnitRectorTest
+class PestTestNamingRectorTest extends BasePolishRectorTest
 {
+    protected function getRectorClass(): string
+    {
+        return PestTestNamingRector::class;
+    }
+
     /**
      * @dataProvider provideData()
      */
-    public function test(string $file): void
+    public function test(SmartFileInfo $file): void
     {
-        $this->doTestFile($file);
+        $this->doTestFileInfo($file);
     }
 
     public function provideData(): Iterator

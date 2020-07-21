@@ -1,6 +1,6 @@
 <?php
 
-namespace Pest\Drift\Testing\Rectors\Pest;
+namespace Pest\Drift\Testing\Rectors\Polish;
 
 use Pest\Drift\Testing\BaseRectorTestCase;
 
