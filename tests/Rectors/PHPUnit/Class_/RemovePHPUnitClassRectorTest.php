@@ -11,7 +11,7 @@ class RemovePHPUnitClassRectorTest extends BasePHPUnitRectorTest
     /**
      * @dataProvider provideData()
      */
-    public function test(SmartFileInfo $fileInfoInfo): void
+    public function test(SmartFileInfo $fileInfo): void
     {
         $this->doTestFileInfo($fileInfo);
     }
