@@ -3,16 +3,18 @@
 namespace Pest\Drift\Testing\Rectors\PHPUnit\ClassMethod;
 
 use Iterator;
+use Pest\Drift\PHPUnit\ClassMethod\BeforeClassToBeforeAllRector;
 use Pest\Drift\Testing\Rectors\PHPUnit\BasePHPUnitRectorTest;
+use Symplify\SmartFileSystem\SmartFileInfo;
 
 class BeforeClassToBeforeAllRectorTest extends BasePHPUnitRectorTest
 {
     /**
      * @dataProvider provideData()
      */
-    public function test(string $file): void
+    public function test(SmartFileInfo $fileInfoInfo): void
     {
-        $this->doTestFile($file);
+        $this->doTestFileInfo($fileInfo);
     }
 
     public function provideData(): Iterator
