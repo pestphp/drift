@@ -22,7 +22,7 @@ use PHPUnit\Framework\TestCase;
 beforeEach(function () {
     $this->stack = [];
 });
-it('testEmpty', function () {
+test('testEmpty', function () {
     $this->assertTrue(empty($this->stack));
 });
 ?>

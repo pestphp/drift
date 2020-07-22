@@ -23,7 +23,7 @@ use PHPUnit\Framework\TestCase;
 afterAll(function () {
     echo 'afterAll';
 });
-it('testAfterClass', function () {
+test('testAfterClass', function () {
     $this->assertTrue(true);
 });
 ?>

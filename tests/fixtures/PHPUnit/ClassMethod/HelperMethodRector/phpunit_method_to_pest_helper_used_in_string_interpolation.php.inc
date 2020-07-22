@@ -19,9 +19,9 @@ class MethodStringInterpolationTest extends TestCase
 use PHPUnit\Framework\TestCase;
 function alwaysTrueHelper()
 {
-    test()->assertTrue(true);
+    return "true";
 }
-it('testMethod', function () {
+test('testMethod', function () {
     alwaysTrueHelper() . " works";
 });
 ?>

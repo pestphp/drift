@@ -29,7 +29,7 @@ dataset('getEmails', function () {
         ['other@example.com']
     ];
 });
-it('testEmail', function ($email) {
+test('testEmail', function ($email) {
     $this->assertNotEmpty($email);
 })->with('getEmails');
 ?>
