@@ -9,11 +9,6 @@ use Symplify\SmartFileSystem\SmartFileInfo;
 
 class TearDownToAfterEachRectorTest extends BasePHPUnitRectorTest
 {
-    protected function getRectorClass(): string
-    {
-        return TearDownToAfterEachRector::class;
-    }
-
     /**
      * @dataProvider provideData()
      */

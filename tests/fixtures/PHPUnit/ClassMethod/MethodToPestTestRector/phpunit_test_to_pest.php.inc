@@ -13,7 +13,7 @@ class ExampleTest extends TestCase
 <?php
 use PHPUnit\Framework\TestCase;
 
-it('testSimple', function () {
+test('testSimple', function () {
     $this->assertTrue(true);
 });
 ?>

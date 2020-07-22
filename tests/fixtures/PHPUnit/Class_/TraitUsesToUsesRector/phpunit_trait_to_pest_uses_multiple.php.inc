@@ -17,7 +17,7 @@ class UsesMultipleTest extends TestCase
 use Pest\Drift\Testing\fixtures\TraitA;
 use PHPUnit\Framework\TestCase;
 uses(TraitA::class, \Pest\Drift\Testing\fixtures\TraitB::class);
-it('testUsesMultiple', function () {
+test('testUsesMultiple', function () {
     $this->assertTrue(true);
 });
 ?>

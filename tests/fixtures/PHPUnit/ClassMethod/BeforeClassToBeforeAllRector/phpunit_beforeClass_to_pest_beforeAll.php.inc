@@ -23,7 +23,7 @@ use PHPUnit\Framework\TestCase;
 beforeAll(function () {
     echo 'beforeAll';
 });
-it('testBeforeClass', function () {
+test('testBeforeClass', function () {
     $this->assertTrue(true);
 });
 ?>

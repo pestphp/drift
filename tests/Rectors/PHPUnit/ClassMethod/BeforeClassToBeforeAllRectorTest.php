@@ -9,11 +9,6 @@ use Symplify\SmartFileSystem\SmartFileInfo;
 
 class BeforeClassToBeforeAllRectorTest extends BasePHPUnitRectorTest
 {
-    protected function getRectorClass(): string
-    {
-        return BeforeClassToBeforeAllRector::class;
-    }
-
     /**
      * @dataProvider provideData()
      */

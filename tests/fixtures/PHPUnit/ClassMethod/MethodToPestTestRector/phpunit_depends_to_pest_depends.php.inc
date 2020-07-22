@@ -18,10 +18,10 @@ class DependsTest extends TestCase
 -----
 <?php
 use PHPUnit\Framework\TestCase;
-it('testDependedOnByNextTest', function () {
+test('testDependedOnByNextTest', function () {
     echo "Depended on";
 });
-it('testDependsOnPreviousTest', function () {
+test('testDependsOnPreviousTest', function () {
     echo "Depends on";
 })->depends('testDependedOnByNextTest');
 ?>
