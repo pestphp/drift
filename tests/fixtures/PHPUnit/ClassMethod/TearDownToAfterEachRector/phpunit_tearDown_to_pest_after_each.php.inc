@@ -20,7 +20,7 @@ use PHPUnit\Framework\TestCase;
 afterEach(function () {
     echo "works";
 });
-it('testTearDown', function () {
+test('testTearDown', function () {
     $this->assertTrue(true);
 });
 ?>

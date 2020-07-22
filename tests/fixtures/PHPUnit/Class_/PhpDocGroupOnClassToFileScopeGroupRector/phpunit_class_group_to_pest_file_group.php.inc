@@ -16,7 +16,7 @@ class Example2Test extends TestCase
 <?php
 use PHPUnit\Framework\TestCase;
 uses()->group('integration');
-it('testSimple', function () {
+test('testSimple', function () {
     $this->assertTrue(true);
 });
 ?>

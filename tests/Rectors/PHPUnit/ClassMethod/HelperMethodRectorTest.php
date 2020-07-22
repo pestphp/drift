@@ -4,15 +4,16 @@ namespace Pest\Drift\Testing\Rectors\PHPUnit\ClassMethod;
 
 use Iterator;
 use Pest\Drift\Testing\Rectors\PHPUnit\BasePHPUnitRectorTest;
+use Symplify\SmartFileSystem\SmartFileInfo;
 
 class HelperMethodRectorTest extends BasePHPUnitRectorTest
 {
     /**
      * @dataProvider provideData()
      */
-    public function test(string $file): void
+    public function test(SmartFileInfo $fileInfo): void
     {
-        $this->doTestFile($file);
+        $this->doTestFileInfo($fileInfo);
     }
 
     public function provideData(): Iterator

@@ -3,11 +3,12 @@
 namespace Pest\Drift\Testing\Rectors\PHPUnit;
 
 use Pest\Drift\Testing\BaseRectorTestCase;
+use Symplify\SmartFileSystem\SmartFileInfo;
 
 abstract class BasePHPUnitRectorTest extends BaseRectorTestCase
 {
-    protected function provideConfig(): string
+    protected function provideConfigFileInfo(): ?SmartFileInfo
     {
-        return __DIR__ . '/../../config/phpunit_rectors.yml';
+        return new SmartFileInfo(__DIR__ . '/../../config/phpunit_rectors.yml');
     }
 }

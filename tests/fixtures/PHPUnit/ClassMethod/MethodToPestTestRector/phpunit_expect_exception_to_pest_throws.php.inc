@@ -14,7 +14,7 @@ class ThrowsExceptionTest extends TestCase
 <?php
 use PHPUnit\Framework\TestCase;
 
-it('testThrowsException', function () {
+test('testThrowsException', function () {
     throw new Exception('Something happened.');
 })->throws(Exception::class);
 ?>

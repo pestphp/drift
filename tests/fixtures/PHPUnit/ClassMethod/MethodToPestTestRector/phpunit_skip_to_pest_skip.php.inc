@@ -14,7 +14,7 @@ class SkipTest extends TestCase
 <?php
 use PHPUnit\Framework\TestCase;
 
-it('testSkip', function () {
+test('testSkip', function () {
     echo "works";
 })->skip('Not yet finished');
 ?>

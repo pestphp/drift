@@ -35,7 +35,7 @@ function alwaysTrueHelper()
 {
     test()->assertTrue(true);
 }
-it('testMethod', function () {
+test('testMethod', function () {
     alwaysTrueHelper();
 });
 ?>

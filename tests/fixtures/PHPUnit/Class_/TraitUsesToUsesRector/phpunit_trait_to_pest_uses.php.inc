@@ -17,7 +17,7 @@ class UsesTest extends TestCase
 use Pest\Drift\Testing\fixtures\TraitA;
 use PHPUnit\Framework\TestCase;
 uses(TraitA::class);
-it('testUses', function () {
+test('testUses', function () {
     $this->assertTrue(true);
 });
 ?>
