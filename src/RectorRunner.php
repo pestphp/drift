@@ -6,7 +6,7 @@ namespace Pest\Drift;
 
 use Symfony\Component\Process\Process;
 
-class RectorRunner
+final class RectorRunner
 {
     private string $binPath;
 

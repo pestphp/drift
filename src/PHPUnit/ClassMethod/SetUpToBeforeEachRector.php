@@ -10,7 +10,7 @@ use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
 
-class SetUpToBeforeEachRector extends AbstractClassMethodRector
+final class SetUpToBeforeEachRector extends AbstractClassMethodRector
 {
     public ?string $type = PestCollector::BEFORE_EACH;
 

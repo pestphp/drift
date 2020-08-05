@@ -17,8 +17,12 @@ return static function (ContainerConfigurator $containerConfigurator): void {
         SetList::SOLID,
     ]);
 
-    $parameters->set(Option::PATHS, [
-        __DIR__ . '/src',
-        __DIR__ . '/tests',
+    $parameters->set(Option::PATHS, [__DIR__ . '/src', __DIR__ . '/tests']);
+
+    $parameters->set(Option::EXCLUDE_PATHS, [__DIR__ . '/tests/fixtures/*']);
+
+    $parameters->set(Option::EXCLUDE_RECTORS, [
+        // buggy, needs fix
+        \Rector\SOLID\Rector\ClassMethod\ChangeReadOnlyVariableWithDefaultValueToConstantRector::class,
     ]);
 };

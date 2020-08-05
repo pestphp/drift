@@ -20,8 +20,13 @@ use Rector\BetterPhpDocParser\PhpDocInfo\PhpDocInfo;
 use Rector\Core\Exception\ShouldNotHappenException;
 use Rector\NodeTypeResolver\Node\AttributeKey;
 
-class MethodToPestTestRector extends AbstractClassMethodRector
+final class MethodToPestTestRector extends AbstractClassMethodRector
 {
+    /**
+     * @var string
+     */
+    private const TEST = 'test';
+
     public ?string $type = PestCollector::TEST_METHODS;
 
     public function classMethodRefactor(Class_ $classNode, ClassMethod $classMethodNode): ?Node
@@ -47,7 +52,7 @@ class MethodToPestTestRector extends AbstractClassMethodRector
     {
         /** @var PhpDocInfo|null $phpDoc */
         $phpDoc = $classMethod->getAttribute(AttributeKey::PHP_DOC_INFO);
-        if ($phpDoc && $phpDoc->hasByName('test')) {
+        if ($phpDoc && $phpDoc->hasByName(self::TEST)) {
             return true;
         }
 
@@ -56,7 +61,7 @@ class MethodToPestTestRector extends AbstractClassMethodRector
             return false;
         }
 
-        return Strings::startsWith($classMethodName, 'test');
+        return Strings::startsWith($classMethodName, self::TEST);
     }
 
     /**
@@ -106,7 +111,7 @@ class MethodToPestTestRector extends AbstractClassMethodRector
             ]),
         ];
 
-        return $this->builderFactory->funcCall('test', $arguments);
+        return $this->builderFactory->funcCall(self::TEST, $arguments);
     }
 
     private function getExpectExceptionCall(ClassMethod $method): ?MethodCallWithPosition

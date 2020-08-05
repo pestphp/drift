@@ -10,7 +10,7 @@ use Symfony\Component\Console\CommandLoader\ContainerCommandLoader;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class Kernel
+final class Kernel
 {
     private Application $container;
 
@@ -19,14 +19,8 @@ class Kernel
         $this->container = $container;
     }
 
-    public function bootstrap(): void
-    {
-    }
-
     public function handle(InputInterface $input, OutputInterface $output): int
     {
-        $this->bootstrap();
-
         $kernelApplication = new \Symfony\Component\Console\Application('Drift - A Pest migration tool');
 
         $kernelApplication->setCommandLoader(new ContainerCommandLoader($this->container, [
@@ -35,10 +29,5 @@ class Kernel
         ]));
 
         return $kernelApplication->run($input, $output);
-    }
-
-    public function terminate(): void
-    {
-        $this->container->terminate();
     }
 }

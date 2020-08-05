@@ -10,7 +10,7 @@ use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
 
-class TearDownToAfterEachRector extends AbstractClassMethodRector
+final class TearDownToAfterEachRector extends AbstractClassMethodRector
 {
     public ?string $type = PestCollector::AFTER_EACH;
 

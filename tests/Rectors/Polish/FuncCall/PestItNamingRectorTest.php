@@ -9,7 +9,7 @@ use Pest\Drift\Pest\FuncCall\PestItNamingRector;
 use Pest\Drift\Testing\Rectors\Polish\BasePolishRectorTest;
 use Symplify\SmartFileSystem\SmartFileInfo;
 
-class PestItNamingRectorTest extends BasePolishRectorTest
+final class PestItNamingRectorTest extends BasePolishRectorTest
 {
     /**
      * @dataProvider provideData()

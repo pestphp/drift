@@ -12,7 +12,7 @@ use PhpParser\Node\Stmt\ClassMethod;
 use Rector\BetterPhpDocParser\PhpDocInfo\PhpDocInfo;
 use Rector\NodeTypeResolver\Node\AttributeKey;
 
-class AfterClassToAfterAllRector extends AbstractClassMethodRector
+final class AfterClassToAfterAllRector extends AbstractClassMethodRector
 {
     public ?string $type = PestCollector::AFTER_ALL;
 

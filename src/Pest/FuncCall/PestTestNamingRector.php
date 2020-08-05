@@ -13,8 +13,13 @@ use Rector\Core\Rector\AbstractRector;
 use Rector\Core\RectorDefinition\CodeSample;
 use Rector\Core\RectorDefinition\RectorDefinition;
 
-class PestTestNamingRector extends AbstractRector
+final class PestTestNamingRector extends AbstractRector
 {
+    /**
+     * @var string
+     */
+    private const TEST = 'test';
+
     public function getNodeTypes(): array
     {
         return [FuncCall::class];
@@ -25,7 +30,7 @@ class PestTestNamingRector extends AbstractRector
      */
     public function refactor(Node $node): ?Node
     {
-        if (! $this->isName($node, 'test')) {
+        if (! $this->isName($node, self::TEST)) {
             return null;
         }
 
@@ -35,16 +40,16 @@ class PestTestNamingRector extends AbstractRector
         }
 
         $firstArgumentValue = $this->getValue($args[0]->value);
-        if (! is_string($this->getValue($firstArgumentValue))) {
+        if (! is_string($firstArgumentValue)) {
             return null;
         }
 
-        if (! Strings::startsWith($this->getValue($firstArgumentValue), 'test')) {
+        if (! Strings::startsWith($firstArgumentValue, self::TEST)) {
             return null;
         }
 
-        $node->name = new Name('test');
-        $node->args[0]->value = new String_(trim(substr($this->getValue($firstArgumentValue), 4)));
+        $node->name = new Name(self::TEST);
+        $node->args[0]->value = new String_(trim(substr($firstArgumentValue, 4)));
 
         return $node;
     }

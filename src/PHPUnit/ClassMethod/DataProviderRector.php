@@ -12,7 +12,7 @@ use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
 use PHPUnit\Framework\TestCase;
 
-class DataProviderRector extends AbstractPHPUnitToPestRector
+final class DataProviderRector extends AbstractPHPUnitToPestRector
 {
     public function getNodeTypes(): array
     {

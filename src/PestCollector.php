@@ -12,7 +12,7 @@ use PhpParser\Node\Stmt;
 use PhpParser\Node\Stmt\Expression;
 use PhpParser\Node\Stmt\Function_;
 
-class PestCollector
+final class PestCollector
 {
     public const DATA_PROVIDER = 'data_provider';
 
@@ -87,6 +87,9 @@ class PestCollector
         $this->addExprToArray(self::HELPER, $node, $newNode);
     }
 
+    /**
+     * @return Node[]
+     */
     public function getMethodsOrdered(Node $node): array
     {
         $nodes = $this->nodes[spl_object_hash($node)] ?? [];

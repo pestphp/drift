@@ -13,7 +13,7 @@ use Rector\Core\Rector\AbstractRector;
 use Rector\Core\RectorDefinition\CodeSample;
 use Rector\Core\RectorDefinition\RectorDefinition;
 
-class PestItNamingRector extends AbstractRector
+final class PestItNamingRector extends AbstractRector
 {
     public function getNodeTypes(): array
     {

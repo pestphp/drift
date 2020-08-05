@@ -8,7 +8,7 @@ use Iterator;
 use Pest\Drift\Testing\Rectors\PHPUnit\BasePHPUnitRectorTest;
 use Symplify\SmartFileSystem\SmartFileInfo;
 
-class PhpDocGroupOnClassToFileScopeGroupRectorTest extends BasePHPUnitRectorTest
+final class PhpDocGroupOnClassToFileScopeGroupRectorTest extends BasePHPUnitRectorTest
 {
     /**
      * @dataProvider provideData()

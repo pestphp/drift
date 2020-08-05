@@ -21,7 +21,7 @@ use PHPUnit\Framework\TestCase;
 use Rector\Core\Exception\ShouldNotHappenException;
 use ReflectionClass;
 
-class HelperMethodRector extends AbstractPHPUnitToPestRector
+final class HelperMethodRector extends AbstractPHPUnitToPestRector
 {
     public function getNodeTypes(): array
     {

@@ -8,7 +8,7 @@ use Iterator;
 use Pest\Drift\Testing\Rectors\PHPUnit\BasePHPUnitRectorTest;
 use Symplify\SmartFileSystem\SmartFileInfo;
 
-class MethodToPestTestRectorTest extends BasePHPUnitRectorTest
+final class MethodToPestTestRectorTest extends BasePHPUnitRectorTest
 {
     /**
      * @dataProvider provideData()

@@ -12,7 +12,7 @@ use PhpParser\Node\Stmt\ClassMethod;
 use Rector\BetterPhpDocParser\PhpDocInfo\PhpDocInfo;
 use Rector\NodeTypeResolver\Node\AttributeKey;
 
-class BeforeClassToBeforeAllRector extends AbstractClassMethodRector
+final class BeforeClassToBeforeAllRector extends AbstractClassMethodRector
 {
     public ?string $type = PestCollector::BEFORE_ALL;
 
