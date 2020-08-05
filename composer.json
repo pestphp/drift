@@ -4,7 +4,7 @@
     "type": "library",
     "require": {
         "php": "^7.4",
-        "rector/rector": "^0.7.60",
+        "rector/rector": "^0.7.62",
         "pestphp/pest": "^0.2"
     },
     "authors": [
