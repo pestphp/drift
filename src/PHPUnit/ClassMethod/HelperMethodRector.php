@@ -14,7 +14,6 @@ use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
 use PHPUnit\Framework\TestCase;
 use Rector\Core\Exception\ShouldNotHappenException;
-use Rector\NodeTypeResolver\Node\AttributeKey;
 use ReflectionClass;
 
 class HelperMethodRector extends AbstractPHPUnitToPestRector
@@ -113,11 +112,6 @@ class HelperMethodRector extends AbstractPHPUnitToPestRector
         }
 
         $this->traverseNodesWithCallable($stmts, function (Node $node) use ($methodName) {
-//            $currentMethodName = $node->getAttribute(AttributeKey::METHOD_NAME);
-//            if ($currentMethodName !== $methodName) {
-//                return null;
-//            }
-
             if ($node instanceof Encapsed) {
                 return $this->createConcatFromEncapsed($node);
             }
@@ -125,18 +119,6 @@ class HelperMethodRector extends AbstractPHPUnitToPestRector
             if (! $node instanceof MethodCall) {
                 return null;
             }
-
-//            $parentNode = $node->getAttribute(AttributeKey::PARENT_NODE);
-//
-//            // probably your case to skip
-//            // https://github.com/rectorphp/rector/blob/master/docs/nodes_overview.md#phpparsernodescalarencapsed
-//            if ($parentNode instanceof Encapsed) {
-//                foreach ($parentNode->parts as $encapsedPart) {
-//                    $this->addNodeAfterNode($encapsedPart, $node);
-//                }
-//
-//                return null;
-//            }
 
             if (! $this->isName($node->name, $methodName)) {
                 return null;
@@ -170,7 +152,6 @@ class HelperMethodRector extends AbstractPHPUnitToPestRector
             $expr = $this->normalizeEncapsedPart($encapsedPart);
             $concatedItem = new Concat($expr, $concatedItem);
         }
-
 
         return $concatedItem;
     }
