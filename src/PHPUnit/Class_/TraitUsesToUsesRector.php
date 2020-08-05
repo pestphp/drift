@@ -7,6 +7,7 @@ namespace Pest\Drift\PHPUnit\Class_;
 use Pest\Drift\PHPUnit\AbstractPHPUnitToPestRector;
 use PhpParser\Node;
 use PhpParser\Node\Expr\ClassConstFetch;
+use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\TraitUse;
 use PHPUnit\Framework\TestCase;
@@ -18,6 +19,9 @@ class TraitUsesToUsesRector extends AbstractPHPUnitToPestRector
         return [Class_::class];
     }
 
+    /**
+     * @param Class_ $node
+     */
     public function refactor(Node $node): ?Node
     {
         if (! $this->isObjectType($node, TestCase::class)) {
@@ -36,7 +40,7 @@ class TraitUsesToUsesRector extends AbstractPHPUnitToPestRector
     /**
      * @param TraitUse[] $traitUses
      */
-    private function createPestUses(array $traitUses)
+    private function createPestUses(array $traitUses): FuncCall
     {
         $traits = [];
         foreach ($traitUses as $traitUse) {
@@ -47,6 +51,6 @@ class TraitUsesToUsesRector extends AbstractPHPUnitToPestRector
             return $this->createArg(new ClassConstFetch($trait, 'class'));
         }, $traits);
 
-        return $this->builderFactory->funcCall('uses', $traits, );
+        return $this->builderFactory->funcCall('uses', $traits);
     }
 }

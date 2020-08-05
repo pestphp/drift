@@ -9,6 +9,7 @@ use PhpParser\Node;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\NodeTraverser;
+use Rector\Core\Exception\ShouldNotHappenException;
 
 abstract class AbstractClassMethodRector extends AbstractPHPUnitToPestRector
 {
@@ -37,6 +38,10 @@ abstract class AbstractClassMethodRector extends AbstractPHPUnitToPestRector
 
             if ($newNode === null) {
                 return null;
+            }
+
+            if ($this->type === null) {
+                throw new ShouldNotHappenException();
             }
 
             // Add the new node and remove the old one.

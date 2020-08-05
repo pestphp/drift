@@ -1,0 +1,25 @@
+includes:
+    - vendor/symplify/phpstan-extensions/config/symplify.error_formatter.neon
+
+parameters:
+    level: max
+    checkGenericClassInNonGenericObjectType: false
+
+    paths:
+        - src
+        - tests
+
+    reportUnmatchedIgnoredErrors: false
+    checkMissingIterableValueType: false
+
+    ignoreErrors:
+        # known type
+        - '#Method Pest\\Drift\\PHPUnit\\ClassMethod\\HelperMethodRector\:\:createConcatFromEncapsed\(\) should return PhpParser\\Node\\Expr\\BinaryOp\\Concat but returns PhpParser\\Node\\Expr#'
+
+        # symfony commant option/arg
+        - '#Cannot cast array<string\>\|string\|null to string#'
+
+        # @todo: solve later
+        - '#Parameter \#1 \$node of method Rector\\Core\\Rector\\AbstractRector\:\:removeStmt\(\) expects PhpParser\\Node\\Expr\\Closure\|PhpParser\\Node\\Stmt\\ClassMethod\|PhpParser\\Node\\Stmt\\Function_, PhpParser\\Node\\Expr given#'
+        - '#Access to an undefined property PhpParser\\Node\\Expr\:\:\$args#'
+        - '#Parameter \#1 \$expr of class PhpParser\\Node\\Stmt\\Expression constructor expects PhpParser\\Node\\Expr, PhpParser\\Node given#'

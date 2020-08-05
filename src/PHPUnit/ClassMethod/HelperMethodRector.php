@@ -10,8 +10,12 @@ use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\BinaryOp\Concat;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Scalar\Encapsed;
+use PhpParser\Node\Scalar\EncapsedStringPart;
+use PhpParser\Node\Scalar\String_;
+use PhpParser\Node\Stmt;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
+use PhpParser\Node\Stmt\Function_;
 use PHPUnit\Framework\TestCase;
 use Rector\Core\Exception\ShouldNotHappenException;
 use ReflectionClass;
@@ -67,7 +71,11 @@ class HelperMethodRector extends AbstractPHPUnitToPestRector
      */
     private function isMethodInParentClasses(ClassMethod $method, array $classParents): bool
     {
+        /** @var string|null $methodName */
         $methodName = $this->getName($method);
+        if ($methodName === null) {
+            return false;
+        }
 
         foreach ($classParents as $classParent) {
             if (! $classParent->hasMethod($methodName)) {
@@ -79,22 +87,30 @@ class HelperMethodRector extends AbstractPHPUnitToPestRector
         return false;
     }
 
-    private function createPestHelperMethod(ClassMethod $method): Node\Stmt\Function_
+    private function createPestHelperMethod(ClassMethod $method): Function_
     {
-        $stmts = array_map(function (Node\Stmt $stmt) {
+        $stmts = array_map(function (Stmt $stmt) {
             if (! isset($stmt->expr) || ! ($stmt->expr instanceof MethodCall)) {
                 return $stmt;
             }
 
-            if (! $this->isName($stmt->expr->var, 'this')) {
+            /** @var MethodCall $methodCall */
+            $methodCall = $stmt->expr;
+
+            if (! $this->isName($methodCall->var, 'this')) {
                 return $stmt;
             }
 
-            $stmt->expr->var = $this->createFuncCall('test');
+            $methodCall->var = $this->createFuncCall('test');
             return $stmt;
-        }, $method->getStmts());
+        }, (array) $method->getStmts());
 
-        return $this->builderFactory->function($this->getName($method))
+        $methodName = $this->getName($method);
+        if ($methodName === null) {
+            throw new ShouldNotHappenException();
+        }
+
+        return $this->builderFactory->function($methodName)
             ->addStmts($stmts)
             ->getNode();
     }
@@ -102,8 +118,11 @@ class HelperMethodRector extends AbstractPHPUnitToPestRector
     private function migratePhpUnitMethodHelpers(Node $pestNode, ClassMethod $methodNode): void
     {
         $methodName = $this->getName($methodNode);
+        if ($methodName === null) {
+            throw new ShouldNotHappenException();
+        }
 
-        if ($pestNode instanceof Node\Stmt\Function_) {
+        if ($pestNode instanceof Function_) {
             $stmts = $pestNode->getStmts();
         } elseif ($pestNode instanceof Node\Stmt\Expression) {
             $stmts = $pestNode->expr->args[1]->value->stmts;
@@ -111,7 +130,7 @@ class HelperMethodRector extends AbstractPHPUnitToPestRector
             throw new ShouldNotHappenException("Can't this node yet.");
         }
 
-        $this->traverseNodesWithCallable($stmts, function (Node $node) use ($methodName) {
+        $this->traverseNodesWithCallable($stmts, function (Node $node) use ($methodName): ?Expr {
             if ($node instanceof Encapsed) {
                 return $this->createConcatFromEncapsed($node);
             }
@@ -129,10 +148,14 @@ class HelperMethodRector extends AbstractPHPUnitToPestRector
     }
 
     /**
-     * @return ReflectionClass[]|void[]
+     * @return ReflectionClass[]
      */
-    private function getParentClasses(?string $className)
+    private function getParentClasses(?string $className): array
     {
+        if ($className === null) {
+            return [];
+        }
+
         return array_map(function (string $classParent) {
             if (! class_exists($classParent)) {
                 return;
@@ -145,6 +168,7 @@ class HelperMethodRector extends AbstractPHPUnitToPestRector
     {
         $encapsedParts = $encapsed->parts;
 
+        /** @var Expr $concatedItem */
         $concatedItem = array_pop($encapsedParts);
         $concatedItem = $this->normalizeEncapsedPart($concatedItem);
 
@@ -156,13 +180,12 @@ class HelperMethodRector extends AbstractPHPUnitToPestRector
         return $concatedItem;
     }
 
-    private function normalizeEncapsedPart(Expr $encapsedPart)
+    private function normalizeEncapsedPart(Expr $encapsedPart): Expr
     {
-        if ($encapsedPart instanceof Node\Scalar\EncapsedStringPart) {
-            $expr = new Node\Scalar\String_($encapsedPart->value);
-        } else {
-            $expr = $encapsedPart;
+        if ($encapsedPart instanceof EncapsedStringPart) {
+            return new String_($encapsedPart->value);
         }
-        return $expr;
+
+        return $encapsedPart;
     }
 }

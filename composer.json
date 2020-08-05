@@ -27,7 +27,9 @@
     "require-dev": {
         "phpunit/phpunit": "^9.0",
         "symplify/easy-testing": "^8.1",
-        "symplify/easy-coding-standard": "^8.1"
+        "symplify/easy-coding-standard": "^8.1",
+        "phpstan/phpstan": "^0.12.36",
+        "symplify/phpstan-extensions": "^8.1"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
@@ -36,6 +38,7 @@
     ],
     "scripts": {
         "check-cs": "vendor/bin/ecs check --ansi",
-        "fix-cs": "vendor/bin/ecs check --fix --ansi"
+        "fix-cs": "vendor/bin/ecs check --fix --ansi",
+        "phpstan": "vendor/bin/phpstan analyze --ansi --error-format symplify"
     }
 }

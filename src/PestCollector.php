@@ -30,12 +30,14 @@ class PestCollector
 
     public const HELPER = 'helper';
 
+    /**
+     * @var Node[][][]
+     */
     public $nodes = [];
 
     public function addExprToArray(string $type, Node $node, Node $newNode): void
     {
         $this->nodes[spl_object_hash($node)][$type][] = $newNode instanceof Stmt ? $newNode : new Expression($newNode);
-        ;
     }
 
     public function addTestMethod(Node $node, Expr $method): void

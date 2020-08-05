@@ -41,7 +41,10 @@ class DataProviderRector extends AbstractPHPUnitToPestRector
         return $node;
     }
 
-    private function isDataProviderMethod(ClassMethod $method, array $methods)
+    /**
+     * @param ClassMethod[] $methods
+     */
+    private function isDataProviderMethod(ClassMethod $method, array $methods): bool
     {
         foreach ($methods as $lookUpMethod) {
             $dataProviderName = $this->getDataProviderName($lookUpMethod);
