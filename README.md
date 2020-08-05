@@ -4,7 +4,7 @@
 <p align="center">
     <img src="/art/banner.png" width="914" title="PEST Dust Banner">
     <p align="center">
-        <a href="https://github.com/pestphp/pest/actions"><img alt="GitHub Workflow Status (master)" src="https://img.shields.io/github/workflow/status/pestphp/drift/Continuous Integration/master"></a>
+        <a href="https://github.com/pestphp/pest/actions"><img alt="GitHub Workflow Status (master)" src="https://img.shields.io/github/workflow/status/pestphp/drift/Run%20tests/master"></a>
         <a href="https://packagist.org/packages/pestphp/drift"><img alt="Total Downloads" src="https://img.shields.io/packagist/dt/pestphp/drift"></a>
         <a href="https://packagist.org/packages/pestphp/drift"><img alt="Latest Version" src="https://img.shields.io/packagist/v/pestphp/drift"></a>
         <a href="https://packagist.org/packages/pestphp/drift"><img alt="License" src="https://img.shields.io/packagist/l/pestphp/drift"></a>
