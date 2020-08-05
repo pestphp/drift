@@ -25,11 +25,16 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^9.0",
-        "symplify/easy-testing": "^8.1"
+        "symplify/easy-testing": "^8.1",
+        "symplify/easy-coding-standard": "^8.1"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
     "bin": [
         "bin/drift"
-    ]
+    ],
+    "scripts": {
+        "check-cs": "vendor/bin/ecs check --ansi",
+        "fix-cs": "vendor/bin/ecs check --fix --ansi"
+    }
 }
