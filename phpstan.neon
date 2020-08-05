@@ -1,0 +1,13 @@
+includes:
+    - vendor/symplify/phpstan-extensions/config/symplify.error_formatter.neon
+
+parameters:
+    level: max
+    checkGenericClassInNonGenericObjectType: false
+
+    paths:
+        - src
+        - tests
+
+    reportUnmatchedIgnoredErrors: false
+    checkMissingIterableValueType: false

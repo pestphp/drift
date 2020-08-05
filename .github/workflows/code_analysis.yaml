@@ -18,6 +18,9 @@ jobs:
                     -   name: Coding Standard
                         run: 'composer check-cs'
 
+                    -   name: PHPStan
+                        run: 'composer phpstan'
+
         steps:
             - name: Checkout code
               uses: actions/checkout@v2
