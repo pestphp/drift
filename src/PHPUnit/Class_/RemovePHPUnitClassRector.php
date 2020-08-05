@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pest\Drift\PHPUnit\Class_;
 
 use Pest\Drift\PHPUnit\AbstractPHPUnitToPestRector;
@@ -19,11 +21,11 @@ class RemovePHPUnitClassRector extends AbstractPHPUnitToPestRector
      */
     public function refactor(Node $node): ?Node
     {
-        if (!$this->isObjectType($node, TestCase::class)) {
+        if (! $this->isObjectType($node, TestCase::class)) {
             return null;
         }
 
-        if (!$this->canRemovePhpUnitClass($node)) {
+        if (! $this->canRemovePhpUnitClass($node)) {
             return null;
         }
 

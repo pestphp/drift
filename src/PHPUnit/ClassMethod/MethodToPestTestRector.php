@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pest\Drift\PHPUnit\ClassMethod;
 
 use Exception;
@@ -12,7 +14,6 @@ use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
 use PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocTagNode;
-use PHPUnit\Framework\TestCase;
 use Rector\BetterPhpDocParser\PhpDocInfo\PhpDocInfo;
 use Rector\NodeTypeResolver\Node\AttributeKey;
 
@@ -22,7 +23,7 @@ class MethodToPestTestRector extends AbstractClassMethodRector
 
     public function classMethodRefactor(Class_ $classNode, ClassMethod $classMethodNode): ?Node
     {
-        if (!$this->isTestMethod($classMethodNode)) {
+        if (! $this->isTestMethod($classMethodNode)) {
             return null;
         }
 
@@ -87,7 +88,6 @@ class MethodToPestTestRector extends AbstractClassMethodRector
 
     /**
      * @param $method
-     * @return FuncCall
      */
     private function createPestTest($method): FuncCall
     {
@@ -104,7 +104,6 @@ class MethodToPestTestRector extends AbstractClassMethodRector
     }
 
     /**
-     * @param ClassMethod $method
      * @return array|null[]
      */
     private function getExpectExceptionCall(ClassMethod $method)
@@ -125,11 +124,7 @@ class MethodToPestTestRector extends AbstractClassMethodRector
             // Remove expect exception call from pest test class
             $this->removeStmt($pestTestNode->args[1]->value, $expectExceptionCallKey);
             // And add pest throws chain.
-            $pestTestNode = $this->createMethodCall(
-                $pestTestNode,
-                'throws',
-                $expectExceptionCall->expr->args
-            );
+            $pestTestNode = $this->createMethodCall($pestTestNode, 'throws', $expectExceptionCall->expr->args);
         }
 
         return $pestTestNode;
@@ -147,7 +142,7 @@ class MethodToPestTestRector extends AbstractClassMethodRector
     private function migratePhpDocGroup(ClassMethod $method, Expr $pestTestNode): Expr
     {
         $groups = $this->getPhpDocGroupNames($method);
-        if (!empty($groups)) {
+        if (! empty($groups)) {
             $pestTestNode = $this->createMethodCall($pestTestNode, 'group', $groups);
         }
         return $pestTestNode;
@@ -156,7 +151,7 @@ class MethodToPestTestRector extends AbstractClassMethodRector
     private function migratePhpDocDepends(ClassMethod $method, Expr $pestTestNode): Expr
     {
         $depends = $this->getPhpDocDependsNames($method);
-        if (!empty($depends)) {
+        if (! empty($depends)) {
             $pestTestNode = $this->createMethodCall($pestTestNode, 'depends', $depends);
         }
         return $pestTestNode;
@@ -183,11 +178,7 @@ class MethodToPestTestRector extends AbstractClassMethodRector
             // Remove markTestSkipped call from pest test class
             $this->removeStmt($this->getPestClosure($pestTestNode), $expectExceptionCallKey);
             // And add pest skip chain.
-            $pestTestNode = $this->createMethodCall(
-                $pestTestNode,
-                'skip',
-                $expectExceptionCall->expr->args
-            );
+            $pestTestNode = $this->createMethodCall($pestTestNode, 'skip', $expectExceptionCall->expr->args);
         }
 
         return $pestTestNode;

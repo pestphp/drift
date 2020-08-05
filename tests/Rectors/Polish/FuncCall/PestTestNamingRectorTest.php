@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pest\Drift\Testing\Rectors\Polish\FuncCall;
 
 use Iterator;
@@ -9,11 +11,6 @@ use Symplify\SmartFileSystem\SmartFileInfo;
 
 class PestTestNamingRectorTest extends BasePolishRectorTest
 {
-    protected function getRectorClass(): string
-    {
-        return PestTestNamingRector::class;
-    }
-
     /**
      * @dataProvider provideData()
      */
@@ -24,8 +21,11 @@ class PestTestNamingRectorTest extends BasePolishRectorTest
 
     public function provideData(): Iterator
     {
-        return $this->yieldFilesFromDirectory(
-            __DIR__ . '/../../../fixtures/Polish/FuncCall/PestTestNamingRector'
-        );
+        return $this->yieldFilesFromDirectory(__DIR__ . '/../../../fixtures/Polish/FuncCall/PestTestNamingRector');
+    }
+
+    protected function getRectorClass(): string
+    {
+        return PestTestNamingRector::class;
     }
 }

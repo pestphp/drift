@@ -1,7 +1,8 @@
 <?php
 
-namespace Pest\Drift;
+declare(strict_types=1);
 
+namespace Pest\Drift;
 
 use Exception;
 use Psr\Container\ContainerInterface;
@@ -23,7 +24,7 @@ class Application implements ContainerInterface
 
         $containerBuilder->compile();
 
-        $containerBuilder->set(Application::class, $this);
+        $containerBuilder->set(self::class, $this);
 
         $this->container = $containerBuilder;
     }

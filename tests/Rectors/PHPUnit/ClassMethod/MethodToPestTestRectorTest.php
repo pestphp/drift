@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pest\Drift\Testing\Rectors\PHPUnit\ClassMethod;
 
 use Iterator;
@@ -22,5 +24,4 @@ class MethodToPestTestRectorTest extends BasePHPUnitRectorTest
             __DIR__ . '/../../../fixtures/PHPUnit/ClassMethod/MethodToPestTestRector'
         );
     }
-
 }

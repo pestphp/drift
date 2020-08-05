@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pest\Drift\Pest\FuncCall;
 
 use Nette\Utils\Strings;
@@ -23,15 +25,15 @@ class PestTestNamingRector extends AbstractRector
      */
     public function refactor(Node $node): ?Node
     {
-        if (!$this->isName($node, 'test')) {
+        if (! $this->isName($node, 'test')) {
             return null;
         }
 
-        if (count($node->args) < 1 || !is_string($this->getValue($node->args[0]->value))) {
+        if (count($node->args) < 1 || ! is_string($this->getValue($node->args[0]->value))) {
             return null;
         }
 
-        if (!Strings::startsWith($this->getValue($node->args[0]->value), 'test')) {
+        if (! Strings::startsWith($this->getValue($node->args[0]->value), 'test')) {
             return null;
         }
 

@@ -1,7 +1,8 @@
 <?php
 
-namespace Pest\Drift;
+declare(strict_types=1);
 
+namespace Pest\Drift;
 
 use Pest\Drift\Commands\MigrateCommand;
 use Pest\Drift\Commands\PolishCommand;

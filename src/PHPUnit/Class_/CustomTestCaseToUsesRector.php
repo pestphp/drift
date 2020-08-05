@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pest\Drift\PHPUnit\Class_;
 
 use Pest\Drift\PHPUnit\AbstractPHPUnitToPestRector;
@@ -20,7 +22,7 @@ class CustomTestCaseToUsesRector extends AbstractPHPUnitToPestRector
      */
     public function refactor(Node $node): ?Node
     {
-        if (!$this->isObjectType($node, TestCase::class)) {
+        if (! $this->isObjectType($node, TestCase::class)) {
             return null;
         }
 
@@ -31,10 +33,7 @@ class CustomTestCaseToUsesRector extends AbstractPHPUnitToPestRector
         }
 
         $newNode = $this->createFuncCall('uses', [
-            new ClassConstFetch(
-                $this->canRemovePhpUnitClass($node) ? $node->extends : $node->name,
-                'class'
-            )
+            new ClassConstFetch($this->canRemovePhpUnitClass($node) ? $node->extends : $node->name, 'class'),
         ]);
 
         $this->pestCollector->addUses($node, $newNode);

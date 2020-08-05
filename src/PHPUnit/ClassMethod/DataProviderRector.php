@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pest\Drift\PHPUnit\ClassMethod;
 
 use Pest\Drift\PHPUnit\AbstractPHPUnitToPestRector;
@@ -12,7 +14,6 @@ use PHPUnit\Framework\TestCase;
 
 class DataProviderRector extends AbstractPHPUnitToPestRector
 {
-
     public function getNodeTypes(): array
     {
         return [Class_::class];
@@ -20,18 +21,15 @@ class DataProviderRector extends AbstractPHPUnitToPestRector
 
     public function refactor(Node $node): ?Node
     {
-        if (!$this->isObjectType($node, TestCase::class)) {
+        if (! $this->isObjectType($node, TestCase::class)) {
             return null;
         }
 
         /** @var ClassMethod[] $methods */
-        $methods = $this->betterNodeFinder->findInstanceOf(
-            $node,
-            ClassMethod::class
-        );
+        $methods = $this->betterNodeFinder->findInstanceOf($node, ClassMethod::class);
 
         foreach ($methods as $method) {
-            if (!$this->isDataProviderMethod($method, $methods)) {
+            if (! $this->isDataProviderMethod($method, $methods)) {
                 continue;
             }
 

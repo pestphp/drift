@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pest\Drift\PHPUnit\Class_;
 
 use Pest\Drift\PHPUnit\AbstractPHPUnitToPestRector;
@@ -18,7 +20,7 @@ class TraitUsesToUsesRector extends AbstractPHPUnitToPestRector
 
     public function refactor(Node $node): ?Node
     {
-        if (!$this->isObjectType($node, TestCase::class)) {
+        if (! $this->isObjectType($node, TestCase::class)) {
             return null;
         }
 
@@ -42,15 +44,9 @@ class TraitUsesToUsesRector extends AbstractPHPUnitToPestRector
         }
 
         $traits = array_map(function ($trait) {
-            return $this->createArg(
-                new ClassConstFetch($trait, 'class')
-            );
+            return $this->createArg(new ClassConstFetch($trait, 'class'));
         }, $traits);
 
-        return $this->builderFactory->funcCall(
-            'uses',
-            $traits,
-        );
+        return $this->builderFactory->funcCall('uses', $traits, );
     }
 }
-

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pest\Drift\Testing\Rectors\PHPUnit\Class_;
 
 use Iterator;
@@ -18,8 +20,6 @@ class TraitUsesToUsesRectorTest extends BasePHPUnitRectorTest
 
     public function provideData(): Iterator
     {
-        return $this->yieldFilesFromDirectory(
-            __DIR__ . '/../../../fixtures/PHPUnit/Class_/TraitUsesToUsesRector'
-        );
+        return $this->yieldFilesFromDirectory(__DIR__ . '/../../../fixtures/PHPUnit/Class_/TraitUsesToUsesRector');
     }
 }
