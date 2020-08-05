@@ -27,7 +27,7 @@ class AfterClassToAfterAllRector extends AbstractClassMethodRector
 
     private function isAfterClassMethod(ClassMethod $method): bool
     {
-        /** @var PhpDocInfo $phpDoc */
+        /** @var PhpDocInfo|null $phpDoc */
         $phpDoc = $method->getAttribute(AttributeKey::PHP_DOC_INFO);
 
         return $phpDoc && $phpDoc->hasByName('afterClass');

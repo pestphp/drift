@@ -20,6 +20,9 @@ class PhpDocGroupOnClassToFileScopeGroupRector extends AbstractPHPUnitToPestRect
         return [Class_::class];
     }
 
+    /**
+     * @param Class_ $node
+     */
     public function refactor(Node $node): ?Node
     {
         if (! $this->isObjectType($node, TestCase::class)) {

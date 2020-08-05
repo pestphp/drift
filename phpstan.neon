@@ -11,3 +11,10 @@ parameters:
 
     reportUnmatchedIgnoredErrors: false
     checkMissingIterableValueType: false
+
+    ignoreErrors:
+        # known type
+        - '#Method Pest\\Drift\\PHPUnit\\ClassMethod\\HelperMethodRector\:\:createConcatFromEncapsed\(\) should return PhpParser\\Node\\Expr\\BinaryOp\\Concat but returns PhpParser\\Node\\Expr#'
+
+        # symfony commant option/arg
+        - '#Cannot cast array<string\>\|string\|null to string#'

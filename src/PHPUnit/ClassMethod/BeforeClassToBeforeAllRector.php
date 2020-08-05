@@ -27,7 +27,7 @@ class BeforeClassToBeforeAllRector extends AbstractClassMethodRector
 
     private function isBeforeClassMethod(ClassMethod $method): bool
     {
-        /** @var PhpDocInfo $phpDoc */
+        /** @var PhpDocInfo|null $phpDoc */
         $phpDoc = $method->getAttribute(AttributeKey::PHP_DOC_INFO);
 
         return $phpDoc && $phpDoc->hasByName('beforeClass');

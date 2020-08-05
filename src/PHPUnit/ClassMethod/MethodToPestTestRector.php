@@ -11,10 +11,13 @@ use PhpParser\Node;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Closure;
 use PhpParser\Node\Expr\FuncCall;
+use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
+use PhpParser\Node\Stmt\Expression;
 use PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocTagNode;
 use Rector\BetterPhpDocParser\PhpDocInfo\PhpDocInfo;
+use Rector\Core\Exception\ShouldNotHappenException;
 use Rector\NodeTypeResolver\Node\AttributeKey;
 
 class MethodToPestTestRector extends AbstractClassMethodRector
@@ -42,27 +45,31 @@ class MethodToPestTestRector extends AbstractClassMethodRector
         return $pestTestNode;
     }
 
-    public function isTestMethod(ClassMethod $node): bool
+    public function isTestMethod(ClassMethod $classMethod): bool
     {
-        /** @var PhpDocInfo $phpDoc */
-        $phpDoc = $node->getAttribute(AttributeKey::PHP_DOC_INFO);
-
+        /** @var PhpDocInfo|null $phpDoc */
+        $phpDoc = $classMethod->getAttribute(AttributeKey::PHP_DOC_INFO);
         if ($phpDoc && $phpDoc->hasByName('test')) {
             return true;
         }
 
-        return Strings::startsWith($this->getName($node), 'test');
+        $classMethodName = $this->getName($classMethod);
+        if ($classMethodName === null) {
+            return false;
+        }
+
+        return Strings::startsWith($classMethodName, 'test');
     }
 
     /**
-     * @return string[]|null
+     * @return string[]
      */
-    public function getPhpDocGroupNames(Node $node): ?array
+    public function getPhpDocGroupNames(Node $node): array
     {
         /** @var PhpDocInfo|null $phpDocInfo */
         $phpDocInfo = $node->getAttribute(AttributeKey::PHP_DOC_INFO);
         if ($phpDocInfo === null) {
-            return null;
+            return [];
         }
 
         return array_map(static function (PhpDocTagNode $tag): string {
@@ -71,14 +78,14 @@ class MethodToPestTestRector extends AbstractClassMethodRector
     }
 
     /**
-     * @return string[]|null
+     * @return string[]
      */
-    public function getPhpDocDependsNames(Node $node): ?array
+    public function getPhpDocDependsNames(Node $node): array
     {
         /** @var PhpDocInfo|null $phpDocInfo */
         $phpDocInfo = $node->getAttribute(AttributeKey::PHP_DOC_INFO);
         if ($phpDocInfo === null) {
-            return null;
+            return [];
         }
 
         return array_map(static function (PhpDocTagNode $tag): string {
@@ -86,99 +93,130 @@ class MethodToPestTestRector extends AbstractClassMethodRector
         }, $phpDocInfo->getTagsByName('depends'));
     }
 
-    /**
-     * @param $method
-     */
-    private function createPestTest($method): FuncCall
+    private function createPestTest(ClassMethod $classMethod): FuncCall
     {
-        return $this->builderFactory->funcCall(
-            'test',
-            [
-                $this->getName($method),
-                new Closure([
-                    'stmts' => $method->stmts,
-                    'params' => $method->params,
-                ]),
-            ]
-        );
+        $functionName = $this->getName($classMethod);
+        if ($functionName === null) {
+            throw new ShouldNotHappenException();
+        }
+
+        $arguments = [
+            $functionName,
+            new Closure([
+                'stmts' => $classMethod->stmts,
+                'params' => $classMethod->params,
+            ]),
+        ];
+
+        return $this->builderFactory->funcCall('test', $arguments);
     }
 
     /**
-     * @return array|null[]
+     * @return array<int|null, MethodCall|null>
      */
-    private function getExpectExceptionCall(ClassMethod $method)
+    private function getExpectExceptionCall(ClassMethod $method): array
     {
-        /** @var Node\Stmt\Expression $stmt */
-        foreach ($method->getStmts() as $key => $stmt) {
+        /** @var Expression $stmt */
+        foreach ((array) $method->getStmts() as $key => $stmt) {
             if (isset($stmt->expr) && $this->isMethodCall($stmt->expr, 'this', 'expectException')) {
-                return [$key, $stmt];
+                return [$key, $stmt->expr];
             }
         }
         return [null, null];
     }
 
+    /**
+     * @param FuncCall|MethodCall $pestTestNode
+     * @return FuncCall|MethodCall
+     */
     private function migrateExpectException(ClassMethod $method, Expr $pestTestNode): Expr
     {
         [$expectExceptionCallKey, $expectExceptionCall] = $this->getExpectExceptionCall($method);
         if ($expectExceptionCall !== null) {
+            /** @var MethodCall $expectExceptionCall */
             // Remove expect exception call from pest test class
+            /** @var int $expectExceptionCallKey */
             $this->removeStmt($pestTestNode->args[1]->value, $expectExceptionCallKey);
             // And add pest throws chain.
-            $pestTestNode = $this->createMethodCall($pestTestNode, 'throws', $expectExceptionCall->expr->args);
+            $pestTestNode = $this->createMethodCall($pestTestNode, 'throws', $expectExceptionCall->args);
         }
 
         return $pestTestNode;
     }
 
-    private function migrateDataProvider(ClassMethod $method, Expr $pestTestNode): Expr
+    /**
+     * @param FuncCall|MethodCall $pestTestNode
+     * @return FuncCall|MethodCall
+     */
+    private function migrateDataProvider(ClassMethod $method, Expr $pestTestNode)
     {
         $dataProvider = $this->getDataProviderName($method);
         if ($dataProvider !== null) {
-            $pestTestNode = $this->createMethodCall($pestTestNode, 'with', [$dataProvider]);
+            return $this->createMethodCall($pestTestNode, 'with', [$dataProvider]);
         }
+
         return $pestTestNode;
     }
 
-    private function migratePhpDocGroup(ClassMethod $method, Expr $pestTestNode): Expr
+    /**
+     * @param FuncCall|MethodCall $pestTestNode
+     * @return FuncCall|MethodCall
+     */
+    private function migratePhpDocGroup(ClassMethod $method, Expr $pestTestNode): \PhpParser\Node
     {
         $groups = $this->getPhpDocGroupNames($method);
-        if (! empty($groups)) {
-            $pestTestNode = $this->createMethodCall($pestTestNode, 'group', $groups);
-        }
-        return $pestTestNode;
-    }
-
-    private function migratePhpDocDepends(ClassMethod $method, Expr $pestTestNode): Expr
-    {
-        $depends = $this->getPhpDocDependsNames($method);
-        if (! empty($depends)) {
-            $pestTestNode = $this->createMethodCall($pestTestNode, 'depends', $depends);
+        if ($groups !== []) {
+            return $this->createMethodCall($pestTestNode, 'group', $groups);
         }
         return $pestTestNode;
     }
 
     /**
-     * @return array|null[]
+     * @param FuncCall|MethodCall $pestTestNode
+     * @return FuncCall|MethodCall
      */
-    private function getMarkTestSkippedCall(ClassMethod $method)
+    private function migratePhpDocDepends(ClassMethod $method, Expr $pestTestNode): Expr
     {
-        /** @var Node\Stmt\Expression $stmt */
-        foreach ($method->getStmts() as $key => $stmt) {
+        $depends = $this->getPhpDocDependsNames($method);
+        if ($depends !== []) {
+            return $this->createMethodCall($pestTestNode, 'depends', $depends);
+        }
+
+        return $pestTestNode;
+    }
+
+    /**
+     * @return array<int|null, MethodCall|null>
+     */
+    private function getMarkTestSkippedCall(ClassMethod $classMethod): array
+    {
+        /** @var Expression $stmt */
+        foreach ((array) $classMethod->getStmts() as $key => $stmt) {
             if (isset($stmt->expr) && $this->isMethodCall($stmt->expr, 'this', 'markTestSkipped')) {
-                return [$key, $stmt];
+                /** @var int $key */
+                /** @var MethodCall $methodCall */
+                $methodCall = $stmt->expr;
+                return [$key, $methodCall];
             }
         }
+
         return [null, null];
     }
 
+    /**
+     * @param FuncCall|MethodCall $pestTestNode
+     * @return FuncCall|MethodCall
+     */
     private function migrateSkipCall(ClassMethod $method, Expr $pestTestNode): Expr
     {
         [$expectExceptionCallKey, $expectExceptionCall] = $this->getMarkTestSkippedCall($method);
         if ($expectExceptionCall !== null) {
             // Remove markTestSkipped call from pest test class
+            /** @var int $expectExceptionCallKey */
             $this->removeStmt($this->getPestClosure($pestTestNode), $expectExceptionCallKey);
             // And add pest skip chain.
-            $pestTestNode = $this->createMethodCall($pestTestNode, 'skip', $expectExceptionCall->expr->args);
+            /** @var MethodCall $expectExceptionCall */
+            return $this->createMethodCall($pestTestNode, 'skip', $expectExceptionCall->args);
         }
 
         return $pestTestNode;

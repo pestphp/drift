@@ -34,12 +34,14 @@ class PolishCommand extends Command
         );
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $process = $this->rectorRunner->run($input->getArgument('path'), $input->getOption('show'), true);
+        $path = (string) $input->getArgument('path');
+        $dryRun = (bool) $input->getOption('show');
 
+        $process = $this->rectorRunner->run($path, $dryRun, true);
         $output->write($process);
 
-        return $process->getExitCode();
+        return (int) $process->getExitCode();
     }
 }

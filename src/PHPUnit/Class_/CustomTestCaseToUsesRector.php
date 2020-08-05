@@ -7,6 +7,7 @@ namespace Pest\Drift\PHPUnit\Class_;
 use Pest\Drift\PHPUnit\AbstractPHPUnitToPestRector;
 use PhpParser\Node;
 use PhpParser\Node\Expr\ClassConstFetch;
+use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\Class_;
 use PHPUnit\Framework\TestCase;
 
@@ -26,15 +27,19 @@ class CustomTestCaseToUsesRector extends AbstractPHPUnitToPestRector
             return null;
         }
 
+        if ($node->extends === null) {
+            return null;
+        }
+
         if ($this->canRemovePhpUnitClass($node)
             && $this->isName($node->extends, TestCase::class)
         ) {
             return null;
         }
 
-        $newNode = $this->createFuncCall('uses', [
-            new ClassConstFetch($this->canRemovePhpUnitClass($node) ? $node->extends : $node->name, 'class'),
-        ]);
+        /** @var Name $className */
+        $className = $this->canRemovePhpUnitClass($node) ? $node->extends : $node->name;
+        $newNode = $this->createFuncCall('uses', [new ClassConstFetch($className, 'class')]);
 
         $this->pestCollector->addUses($node, $newNode);
         return $node;
