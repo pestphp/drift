@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pest\Drift\PHPUnit\ClassMethod;
 
 use Pest\Drift\PestCollector;
@@ -16,7 +18,7 @@ class AfterClassToAfterAllRector extends AbstractClassMethodRector
 
     public function classMethodRefactor(Class_ $classNode, ClassMethod $classMethodNode): ?FuncCall
     {
-        if (!$this->isAfterClassMethod($classMethodNode)) {
+        if (! $this->isAfterClassMethod($classMethodNode)) {
             return null;
         }
 
@@ -33,11 +35,8 @@ class AfterClassToAfterAllRector extends AbstractClassMethodRector
 
     private function createPestAfterAll(ClassMethod $method): FuncCall
     {
-        return $this->builderFactory->funcCall(
-            'afterAll',
-            [
-                new Closure(['stmts' => $method->stmts]),
-            ]
-        );
+        return $this->builderFactory->funcCall('afterAll', [
+            new Closure(['stmts' => $method->stmts]),
+        ]);
     }
 }

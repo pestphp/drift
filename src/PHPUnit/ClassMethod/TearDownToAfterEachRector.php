@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pest\Drift\PHPUnit\ClassMethod;
 
 use Pest\Drift\PestCollector;
@@ -14,7 +16,7 @@ class TearDownToAfterEachRector extends AbstractClassMethodRector
 
     public function classMethodRefactor(Class_ $classNode, ClassMethod $classMethodNode): ?FuncCall
     {
-        if (!$this->isTearDownMethod($classMethodNode)) {
+        if (! $this->isTearDownMethod($classMethodNode)) {
             return null;
         }
 
@@ -28,11 +30,8 @@ class TearDownToAfterEachRector extends AbstractClassMethodRector
 
     private function createPestAfterEach(ClassMethod $method): FuncCall
     {
-        return $this->builderFactory->funcCall(
-            'afterEach',
-            [
-                new Closure(['stmts' => $method->stmts]),
-            ]
-        );
+        return $this->builderFactory->funcCall('afterEach', [
+            new Closure(['stmts' => $method->stmts]),
+        ]);
     }
 }

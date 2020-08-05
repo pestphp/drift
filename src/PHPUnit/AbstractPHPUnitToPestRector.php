@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pest\Drift\PHPUnit;
 
 use Exception;
@@ -19,7 +21,9 @@ use Rector\NodeTypeResolver\Node\AttributeKey;
 
 abstract class AbstractPHPUnitToPestRector extends AbstractRector
 {
-    /** @var PestCollector */
+    /**
+     * @var PestCollector
+     */
     public $pestCollector;
 
     public function __construct(PestCollector $pestCollector)
@@ -29,9 +33,7 @@ abstract class AbstractPHPUnitToPestRector extends AbstractRector
 
     public function getDefinition(): RectorDefinition
     {
-        return new RectorDefinition(
-            'Migrate PHPUnit behavior to Pest'
-        );
+        return new RectorDefinition('Migrate PHPUnit behavior to Pest');
     }
 
     public function isInPhpUnitBehavior(Node $node): bool
@@ -54,15 +56,6 @@ abstract class AbstractPHPUnitToPestRector extends AbstractRector
         return $this->getInnerVariable($pestTest)->args[1]->value;
     }
 
-    private function getInnerVariable(Expr $expr): Expr
-    {
-        if (isset($expr->var)) {
-            return $this->getInnerVariable($expr->var);
-        }
-
-        return $expr;
-    }
-
     protected function getDataProviderName(ClassMethod $method): ?string
     {
         /** @var PhpDocInfo|null $phpDocInfo */
@@ -80,7 +73,7 @@ abstract class AbstractPHPUnitToPestRector extends AbstractRector
         }
 
         if (count($dataProviders) !== 1) {
-            throw new Exception("Multiple data providers found on one method.");
+            throw new Exception('Multiple data providers found on one method.');
         }
 
         return $dataProviders[0];
@@ -89,10 +82,19 @@ abstract class AbstractPHPUnitToPestRector extends AbstractRector
     protected function canRemovePhpUnitClass(Class_ $node): bool
     {
         foreach ($node->getMethods() as $method) {
-            if (!$this->isNodeRemoved($method)) {
+            if (! $this->isNodeRemoved($method)) {
                 return false;
             }
         }
         return true;
+    }
+
+    private function getInnerVariable(Expr $expr): Expr
+    {
+        if (isset($expr->var)) {
+            return $this->getInnerVariable($expr->var);
+        }
+
+        return $expr;
     }
 }

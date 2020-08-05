@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pest\Drift\Commands;
 
 use Pest\Drift\RectorRunner;
@@ -34,10 +36,7 @@ class MigrateCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $process = $this->rectorRunner->run(
-            $input->getArgument('path'),
-            $input->getOption('show'),
-        );
+        $process = $this->rectorRunner->run($input->getArgument('path'), $input->getOption('show'), );
 
         $output->write($process);
 

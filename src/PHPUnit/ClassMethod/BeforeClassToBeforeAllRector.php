@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pest\Drift\PHPUnit\ClassMethod;
 
 use Pest\Drift\PestCollector;
@@ -16,7 +18,7 @@ class BeforeClassToBeforeAllRector extends AbstractClassMethodRector
 
     public function classMethodRefactor(Class_ $classNode, ClassMethod $classMethodNode): ?FuncCall
     {
-        if (!$this->isBeforeClassMethod($classMethodNode)) {
+        if (! $this->isBeforeClassMethod($classMethodNode)) {
             return null;
         }
 
@@ -33,11 +35,8 @@ class BeforeClassToBeforeAllRector extends AbstractClassMethodRector
 
     private function createPestBeforeAll(ClassMethod $method): FuncCall
     {
-        return $this->builderFactory->funcCall(
-            'beforeAll',
-            [
-                new Closure(['stmts' => $method->stmts]),
-            ]
-        );
+        return $this->builderFactory->funcCall('beforeAll', [
+            new Closure(['stmts' => $method->stmts]),
+        ]);
     }
 }

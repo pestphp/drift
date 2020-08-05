@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pest\Drift\PHPUnit\ClassMethod;
 
 use Pest\Drift\PHPUnit\AbstractPHPUnitToPestRector;
 use PhpParser\Node;
-use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Scalar\Encapsed;
 use PhpParser\Node\Stmt\Class_;
@@ -26,7 +27,7 @@ class HelperMethodRector extends AbstractPHPUnitToPestRector
      */
     public function refactor(Node $node): ?Node
     {
-        if (!$this->isObjectType($node, TestCase::class)) {
+        if (! $this->isObjectType($node, TestCase::class)) {
             return null;
         }
 
@@ -57,7 +58,6 @@ class HelperMethodRector extends AbstractPHPUnitToPestRector
             }
         }
 
-
         return $node;
     }
 
@@ -69,7 +69,7 @@ class HelperMethodRector extends AbstractPHPUnitToPestRector
         $methodName = $this->getName($method);
 
         foreach ($classParents as $classParent) {
-            if (!$classParent->hasMethod($methodName)) {
+            if (! $classParent->hasMethod($methodName)) {
                 continue;
             }
 
@@ -81,11 +81,11 @@ class HelperMethodRector extends AbstractPHPUnitToPestRector
     private function createPestHelperMethod(ClassMethod $method): Node\Stmt\Function_
     {
         $stmts = array_map(function (Node\Stmt $stmt) {
-            if (!isset($stmt->expr) || !($stmt->expr instanceof MethodCall)) {
+            if (! isset($stmt->expr) || ! ($stmt->expr instanceof MethodCall)) {
                 return $stmt;
             }
 
-            if (!$this->isName($stmt->expr->var, 'this')) {
+            if (! $this->isName($stmt->expr->var, 'this')) {
                 return $stmt;
             }
 
@@ -123,7 +123,7 @@ class HelperMethodRector extends AbstractPHPUnitToPestRector
                 return null;
             }
 
-            if (!$this->isName($node->name, $methodName)) {
+            if (! $this->isName($node->name, $methodName)) {
                 return null;
             }
 
@@ -132,13 +132,12 @@ class HelperMethodRector extends AbstractPHPUnitToPestRector
     }
 
     /**
-     * @param string|null $className
      * @return ReflectionClass[]|void[]
      */
     private function getParentClasses(?string $className)
     {
         return array_map(function (string $classParent) {
-            if (!class_exists($classParent)) {
+            if (! class_exists($classParent)) {
                 return;
             }
             return new ReflectionClass($classParent);

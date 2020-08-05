@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pest\Drift\PHPUnit\ClassMethod;
 
 use Pest\Drift\PHPUnit\AbstractPHPUnitToPestRector;
@@ -22,7 +24,7 @@ abstract class AbstractClassMethodRector extends AbstractPHPUnitToPestRector
      */
     public function refactor(Node $classNode): ?Node
     {
-        if (!$this->isInPhpUnitBehavior($classNode)) {
+        if (! $this->isInPhpUnitBehavior($classNode)) {
             return null;
         }
 
@@ -47,5 +49,5 @@ abstract class AbstractClassMethodRector extends AbstractPHPUnitToPestRector
         return $classNode;
     }
 
-    public abstract function classMethodRefactor(Class_ $classNode, ClassMethod $classMethodNode): ?Node;
+    abstract public function classMethodRefactor(Class_ $classNode, ClassMethod $classMethodNode): ?Node;
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pest\Drift\Pest;
 
 use Pest\Drift\PestCollector;
@@ -9,7 +11,9 @@ use Rector\PostRector\Rector\AbstractPostRector;
 
 class PestCollectingRector extends AbstractPostRector
 {
-    /** @var PestCollector */
+    /**
+     * @var PestCollector
+     */
     private $pestCollector;
 
     public function __construct(PestCollector $pestCollector)
@@ -19,7 +23,7 @@ class PestCollectingRector extends AbstractPostRector
 
     public function getDefinition(): RectorDefinition
     {
-        return new RectorDefinition("Takes care of the pest collector.");
+        return new RectorDefinition('Takes care of the pest collector.');
     }
 
     public function getPriority(): int

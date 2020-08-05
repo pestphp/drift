@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pest\Drift\PHPUnit\Class_;
 
 use Pest\Drift\PHPUnit\AbstractPHPUnitToPestRector;
@@ -13,7 +15,6 @@ use Rector\NodeTypeResolver\Node\AttributeKey;
 
 class PhpDocGroupOnClassToFileScopeGroupRector extends AbstractPHPUnitToPestRector
 {
-
     public function getNodeTypes(): array
     {
         return [Class_::class];
@@ -21,17 +22,14 @@ class PhpDocGroupOnClassToFileScopeGroupRector extends AbstractPHPUnitToPestRect
 
     public function refactor(Node $node): ?Node
     {
-        if (!$this->isObjectType($node, TestCase::class)) {
+        if (! $this->isObjectType($node, TestCase::class)) {
             return null;
         }
 
         // Add groups from class to whole file
         $classGroupNames = $this->getPhpDocGroupNames($node);
-        if (!empty($classGroupNames)) {
-            $this->pestCollector->addFileScopeGroup(
-                $node,
-                $this->createFileScopeGroupCall($classGroupNames)
-            );
+        if (! empty($classGroupNames)) {
+            $this->pestCollector->addFileScopeGroup($node, $this->createFileScopeGroupCall($classGroupNames));
         }
 
         return $node;
@@ -55,10 +53,6 @@ class PhpDocGroupOnClassToFileScopeGroupRector extends AbstractPHPUnitToPestRect
 
     private function createFileScopeGroupCall(array $groups): MethodCall
     {
-        return $this->createMethodCall(
-            $this->createUsesCall(),
-            'group',
-            $groups
-        );
+        return $this->createMethodCall($this->createUsesCall(), 'group', $groups);
     }
 }

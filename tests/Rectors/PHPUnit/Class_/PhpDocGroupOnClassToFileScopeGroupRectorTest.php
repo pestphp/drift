@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pest\Drift\Testing\Rectors\PHPUnit\Class_;
 
 use Iterator;
