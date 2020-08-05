@@ -6,6 +6,8 @@ namespace Pest\Drift;
 
 use PhpParser\Node;
 use PhpParser\Node\Expr;
+use PhpParser\Node\Expr\FuncCall;
+use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Stmt;
 use PhpParser\Node\Stmt\Expression;
 use PhpParser\Node\Stmt\Function_;
@@ -45,37 +47,37 @@ class PestCollector
         $this->addExprToArray(self::TEST_METHODS, $node, $method);
     }
 
-    public function addDataProviderMethod(Node $node, Expr\FuncCall $func): void
+    public function addDataProviderMethod(Node $node, FuncCall $func): void
     {
         $this->addExprToArray(self::DATA_PROVIDER, $node, $func);
     }
 
-    public function addFileScopeGroup(Node $node, Expr\MethodCall $methodCall): void
+    public function addFileScopeGroup(Node $node, MethodCall $methodCall): void
     {
         $this->addExprToArray(self::FILE_SCOPE_GROUP, $node, $methodCall);
     }
 
-    public function addAfterAll(Node $node, Expr\FuncCall $newNode): void
+    public function addAfterAll(Node $node, FuncCall $newNode): void
     {
         $this->addExprToArray(self::AFTER_ALL, $node, $newNode);
     }
 
-    public function addBeforeAll(Node $node, Expr\FuncCall $newNode): void
+    public function addBeforeAll(Node $node, FuncCall $newNode): void
     {
         $this->addExprToArray(self::BEFORE_ALL, $node, $newNode);
     }
 
-    public function addBeforeEach(Node $node, Expr\FuncCall $newNode): void
+    public function addBeforeEach(Node $node, FuncCall $newNode): void
     {
         $this->addExprToArray(self::BEFORE_EACH, $node, $newNode);
     }
 
-    public function addAfterEach(Node $node, Expr\FuncCall $newNode): void
+    public function addAfterEach(Node $node, FuncCall $newNode): void
     {
         $this->addExprToArray(self::AFTER_EACH, $node, $newNode);
     }
 
-    public function addUses(Node $node, Expr\FuncCall $newNode): void
+    public function addUses(Node $node, FuncCall $newNode): void
     {
         $this->addExprToArray(self::USES, $node, $newNode);
     }

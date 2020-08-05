@@ -15,6 +15,7 @@ use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\Stmt;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
+use PhpParser\Node\Stmt\Expression;
 use PhpParser\Node\Stmt\Function_;
 use PHPUnit\Framework\TestCase;
 use Rector\Core\Exception\ShouldNotHappenException;
@@ -124,7 +125,7 @@ class HelperMethodRector extends AbstractPHPUnitToPestRector
 
         if ($pestNode instanceof Function_) {
             $stmts = $pestNode->getStmts();
-        } elseif ($pestNode instanceof Node\Stmt\Expression) {
+        } elseif ($pestNode instanceof Expression) {
             $stmts = $pestNode->expr->args[1]->value->stmts;
         } else {
             throw new ShouldNotHappenException("Can't this node yet.");

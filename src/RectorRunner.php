@@ -21,7 +21,7 @@ class RectorRunner
             '/../config/polish-pest.yml' :
             '/../config/phpunit-to-pest.yml';
 
-        $process = new \Symfony\Component\Process\Process(array_filter([
+        $process = new Process(array_filter([
             $this->binPath,
             'process',
             $path,

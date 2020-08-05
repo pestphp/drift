@@ -40,9 +40,7 @@ class MethodToPestTestRector extends AbstractClassMethodRector
 
         $pestTestNode = $this->migrateSkipCall($classMethodNode, $pestTestNode);
 
-        $pestTestNode = $this->migratePhpDocDepends($classMethodNode, $pestTestNode);
-
-        return $pestTestNode;
+        return $this->migratePhpDocDepends($classMethodNode, $pestTestNode);
     }
 
     public function isTestMethod(ClassMethod $classMethod): bool
@@ -159,7 +157,7 @@ class MethodToPestTestRector extends AbstractClassMethodRector
      * @param FuncCall|MethodCall $pestTestNode
      * @return FuncCall|MethodCall
      */
-    private function migratePhpDocGroup(ClassMethod $method, Expr $pestTestNode): \PhpParser\Node
+    private function migratePhpDocGroup(ClassMethod $method, Expr $pestTestNode): Node
     {
         $groups = $this->getPhpDocGroupNames($method);
         if ($groups !== []) {
