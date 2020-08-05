@@ -9,6 +9,6 @@ abstract class BasePHPUnitRectorTest extends BaseRectorTestCase
 {
     protected function provideConfigFileInfo(): ?SmartFileInfo
     {
-        return new SmartFileInfo(__DIR__ . '/../../config/phpunit_rectors.yml');
+        return new SmartFileInfo(__DIR__ . '/../../config/phpunit_rectors.php');
     }
 }

@@ -1,3 +1,0 @@
-services:
-  Pest\Drift\Pest\FuncCall\PestTestNamingRector: ~
-  Pest\Drift\Pest\FuncCall\PestItNamingRector: ~
