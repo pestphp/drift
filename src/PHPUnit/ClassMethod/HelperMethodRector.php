@@ -5,6 +5,7 @@ namespace Pest\Drift\PHPUnit\ClassMethod;
 use Pest\Drift\PHPUnit\AbstractPHPUnitToPestRector;
 use PhpParser\Node;
 use PhpParser\Node\Expr;
+use PhpParser\Node\Expr\BinaryOp\Concat;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Scalar\Encapsed;
 use PhpParser\Node\Stmt\Class_;
@@ -111,17 +112,30 @@ class HelperMethodRector extends AbstractPHPUnitToPestRector
         }
 
         $this->traverseNodesWithCallable($stmts, function (Node $node) use ($methodName) {
+//            $currentMethodName = $node->getAttribute(AttributeKey::METHOD_NAME);
+//            if ($currentMethodName !== $methodName) {
+//                return null;
+//            }
+
+            if ($node instanceof Encapsed) {
+                return $this->createConcatFromEncapsed($node);
+            }
+
             if (! $node instanceof MethodCall) {
                 return null;
             }
 
-            $parentNode = $node->getAttribute(AttributeKey::PARENT_NODE);
-
-            // probably your case to skip
-            // https://github.com/rectorphp/rector/blob/master/docs/nodes_overview.md#phpparsernodescalarencapsed
-            if ($parentNode instanceof Encapsed) {
-                return null;
-            }
+//            $parentNode = $node->getAttribute(AttributeKey::PARENT_NODE);
+//
+//            // probably your case to skip
+//            // https://github.com/rectorphp/rector/blob/master/docs/nodes_overview.md#phpparsernodescalarencapsed
+//            if ($parentNode instanceof Encapsed) {
+//                foreach ($parentNode->parts as $encapsedPart) {
+//                    $this->addNodeAfterNode($encapsedPart, $node);
+//                }
+//
+//                return null;
+//            }
 
             if (!$this->isName($node->name, $methodName)) {
                 return null;
@@ -143,5 +157,31 @@ class HelperMethodRector extends AbstractPHPUnitToPestRector
             }
             return new ReflectionClass($classParent);
         }, class_parents($className));
+    }
+
+    private function createConcatFromEncapsed(Encapsed $encapsed): Concat
+    {
+        $encapsedParts = $encapsed->parts;
+
+        $concatedItem = array_pop($encapsedParts);
+        $concatedItem = $this->normalizeEncapsedPart($concatedItem);
+
+        foreach ($encapsedParts as $encapsedPart) {
+            $expr = $this->normalizeEncapsedPart($encapsedPart);
+            $concatedItem = new Concat($expr, $concatedItem);
+        }
+
+
+        return $concatedItem;
+    }
+
+    private function normalizeEncapsedPart(Expr $encapsedPart)
+    {
+        if ($encapsedPart instanceof Node\Scalar\EncapsedStringPart) {
+            $expr = new Node\Scalar\String_($encapsedPart->value);
+        } else {
+            $expr = $encapsedPart;
+        }
+        return $expr;
     }
 }
