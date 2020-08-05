@@ -1,4 +1,4 @@
-name: Coding Standards
+name: Code Analysis
 
 on:
     pull_request:
@@ -7,12 +7,16 @@ on:
             - master
 
 jobs:
-    coding_standards:
-        name: Coding on PHP${{ matrix.php }}
+    code_analysis:
+        name: ${{ matrix.actions.name }} on PHP ${{ matrix.php }}
         runs-on: ubuntu-latest
         strategy:
             matrix:
                 php: ['7.4']
+
+                actions:
+                    -   name: Coding Standard
+                        run: 'composer check-cs'
 
         steps:
             - name: Checkout code
@@ -26,4 +30,4 @@ jobs:
             - name: Install Composer dependencies
               run: composer install --no-progress --no-suggest --prefer-dist --ignore-platform-reqs --optimize-autoloader
 
-            - run: composer check-cs
+            - run: ${{ matrix.actions.run }}
