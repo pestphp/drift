@@ -1,4 +1,4 @@
-**WARNING: This is a 'work in progress' and is not ready for use of any kind at this time.**
+**WARNING: This is a 'work in progress'
 
 
 <p align="center">

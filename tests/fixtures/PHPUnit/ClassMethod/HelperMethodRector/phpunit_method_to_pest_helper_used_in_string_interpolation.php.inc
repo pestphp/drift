@@ -22,6 +22,6 @@ function alwaysTrueHelper()
     return "true";
 }
 test('testMethod', function () {
-    alwaysTrueHelper() . " works";
+    alwaysTrueHelper() . ' works';
 });
 ?>
