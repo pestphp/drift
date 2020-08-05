@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Pest\Drift\PHPUnit\ClassMethod;
 
-use Exception;
 use Nette\Utils\Strings;
 use Pest\Drift\PestCollector;
+use Pest\Drift\ValueObject\MethodCallWithPosition;
 use PhpParser\Node;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Closure;
@@ -111,18 +111,18 @@ class MethodToPestTestRector extends AbstractClassMethodRector
         return $this->builderFactory->funcCall('test', $arguments);
     }
 
-    /**
-     * @return array<int|null, MethodCall|null>
-     */
-    private function getExpectExceptionCall(ClassMethod $method): array
+    private function getExpectExceptionCall(ClassMethod $method): ?MethodCallWithPosition
     {
         /** @var Expression $stmt */
         foreach ((array) $method->getStmts() as $key => $stmt) {
             if (isset($stmt->expr) && $this->isMethodCall($stmt->expr, 'this', 'expectException')) {
-                return [$key, $stmt->expr];
+                /** @var MethodCall $methodCall */
+                $methodCall = $stmt->expr;
+                return new MethodCallWithPosition($key, $methodCall);
             }
         }
-        return [null, null];
+
+        return null;
     }
 
     /**
@@ -131,14 +131,11 @@ class MethodToPestTestRector extends AbstractClassMethodRector
      */
     private function migrateExpectException(ClassMethod $method, Expr $pestTestNode): Expr
     {
-        [$expectExceptionCallKey, $expectExceptionCall] = $this->getExpectExceptionCall($method);
-        if ($expectExceptionCall !== null) {
-            /** @var MethodCall $expectExceptionCall */
-            // Remove expect exception call from pest test class
-            /** @var int $expectExceptionCallKey */
-            $this->removeStmt($pestTestNode->args[1]->value, $expectExceptionCallKey);
-            // And add pest throws chain.
-            $pestTestNode = $this->createMethodCall($pestTestNode, 'throws', $expectExceptionCall->args);
+        $methodCallWithPosition = $this->getExpectExceptionCall($method);
+
+        if ($methodCallWithPosition !== null) {
+            $this->removeStmt($pestTestNode->args[1]->value, $methodCallWithPosition->getPosition());
+            $pestTestNode = $this->createMethodCall($pestTestNode, 'throws', $methodCallWithPosition->getArgs());
         }
 
         return $pestTestNode;
@@ -185,10 +182,7 @@ class MethodToPestTestRector extends AbstractClassMethodRector
         return $pestTestNode;
     }
 
-    /**
-     * @return array<int|null, MethodCall|null>
-     */
-    private function getMarkTestSkippedCall(ClassMethod $classMethod): array
+    private function getMarkTestSkippedCall(ClassMethod $classMethod): ?MethodCallWithPosition
     {
         /** @var Expression $stmt */
         foreach ((array) $classMethod->getStmts() as $key => $stmt) {
@@ -196,11 +190,11 @@ class MethodToPestTestRector extends AbstractClassMethodRector
                 /** @var int $key */
                 /** @var MethodCall $methodCall */
                 $methodCall = $stmt->expr;
-                return [$key, $methodCall];
+                return new MethodCallWithPosition($key, $methodCall);
             }
         }
 
-        return [null, null];
+        return null;
     }
 
     /**
@@ -209,14 +203,10 @@ class MethodToPestTestRector extends AbstractClassMethodRector
      */
     private function migrateSkipCall(ClassMethod $method, Expr $pestTestNode): Expr
     {
-        [$expectExceptionCallKey, $expectExceptionCall] = $this->getMarkTestSkippedCall($method);
-        if ($expectExceptionCall !== null) {
-            // Remove markTestSkipped call from pest test class
-            /** @var int $expectExceptionCallKey */
-            $this->removeStmt($this->getPestClosure($pestTestNode), $expectExceptionCallKey);
-            // And add pest skip chain.
-            /** @var MethodCall $expectExceptionCall */
-            return $this->createMethodCall($pestTestNode, 'skip', $expectExceptionCall->args);
+        $methodCallWithPosition = $this->getMarkTestSkippedCall($method);
+        if ($methodCallWithPosition !== null) {
+            $this->removeStmt($this->getPestClosure($pestTestNode), $methodCallWithPosition->getPosition());
+            return $this->createMethodCall($pestTestNode, 'skip', $methodCallWithPosition->getArgs());
         }
 
         return $pestTestNode;
