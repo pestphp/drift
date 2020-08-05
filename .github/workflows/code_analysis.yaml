@@ -21,6 +21,9 @@ jobs:
                     -   name: PHPStan
                         run: 'composer phpstan'
 
+                    -   name: Rector
+                        run: 'composer rector'
+
         steps:
             - name: Checkout code
               uses: actions/checkout@v2

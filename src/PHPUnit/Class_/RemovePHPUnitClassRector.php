@@ -9,7 +9,7 @@ use PhpParser\Node;
 use PhpParser\Node\Stmt\Class_;
 use PHPUnit\Framework\TestCase;
 
-class RemovePHPUnitClassRector extends AbstractPHPUnitToPestRector
+final class RemovePHPUnitClassRector extends AbstractPHPUnitToPestRector
 {
     public function getNodeTypes(): array
     {

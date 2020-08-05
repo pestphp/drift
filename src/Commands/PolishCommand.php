@@ -11,7 +11,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class PolishCommand extends Command
+final class PolishCommand extends Command
 {
     private RectorRunner $rectorRunner;
 

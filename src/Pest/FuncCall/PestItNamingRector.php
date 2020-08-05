@@ -13,7 +13,7 @@ use Rector\Core\Rector\AbstractRector;
 use Rector\Core\RectorDefinition\CodeSample;
 use Rector\Core\RectorDefinition\RectorDefinition;
 
-class PestItNamingRector extends AbstractRector
+final class PestItNamingRector extends AbstractRector
 {
     public function getNodeTypes(): array
     {
@@ -29,16 +29,22 @@ class PestItNamingRector extends AbstractRector
             return null;
         }
 
-        if (count($node->args) < 1 || ! is_string($this->getValue($node->args[0]->value))) {
+        $args = (array) $node->args;
+        if (count($args) === 0) {
             return null;
         }
 
-        if (! Strings::startsWith($this->getValue($node->args[0]->value), 'it')) {
+        $firstArgumentValue = $this->getValue($args[0]->value);
+        if (! is_string($firstArgumentValue)) {
+            return null;
+        }
+
+        if (! Strings::startsWith($firstArgumentValue, 'it')) {
             return null;
         }
 
         $node->name = new Name('it');
-        $node->args[0]->value = new String_(trim(substr($this->getValue($node->args[0]->value), 2)));
+        $node->args[0]->value = new String_(trim(substr($firstArgumentValue, 2)));
 
         return $node;
     }

@@ -38,8 +38,6 @@ $status = $kernel->handle(
 |
 */
 
-$kernel->terminate();
-
 exit($status);
 
 

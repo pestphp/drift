@@ -10,7 +10,7 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 
-class Application implements ContainerInterface
+final class Application implements ContainerInterface
 {
     private ContainerInterface $container;
 
@@ -47,9 +47,5 @@ class Application implements ContainerInterface
     public function has($id): bool
     {
         return $this->container->has($id);
-    }
-
-    public function terminate(): void
-    {
     }
 }

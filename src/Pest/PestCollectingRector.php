@@ -9,7 +9,7 @@ use PhpParser\Node;
 use Rector\Core\RectorDefinition\RectorDefinition;
 use Rector\PostRector\Rector\AbstractPostRector;
 
-class PestCollectingRector extends AbstractPostRector
+final class PestCollectingRector extends AbstractPostRector
 {
     /**
      * @var PestCollector

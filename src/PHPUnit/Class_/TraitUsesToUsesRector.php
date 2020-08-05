@@ -12,7 +12,7 @@ use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\TraitUse;
 use PHPUnit\Framework\TestCase;
 
-class TraitUsesToUsesRector extends AbstractPHPUnitToPestRector
+final class TraitUsesToUsesRector extends AbstractPHPUnitToPestRector
 {
     public function getNodeTypes(): array
     {

@@ -18,7 +18,14 @@ return static function (ContainerConfigurator $containerConfigurator): void {
         __DIR__ . '/tests',
         __DIR__ . '/config',
         __DIR__ . '/ecs.php',
+        __DIR__ . '/rector-ci.php',
     ]);
 
-    $parameters->set(Option::SETS, [SetList::PSR_12, SetList::PHP_71, SetList::PHP_70, SetList::COMMON]);
+    $parameters->set(Option::SETS, [
+        SetList::PSR_12,
+        SetList::PHP_71,
+        SetList::PHP_70,
+        SetList::COMMON,
+        SetList::DEAD_CODE,
+    ]);
 };

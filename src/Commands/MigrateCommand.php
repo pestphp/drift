@@ -11,7 +11,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class MigrateCommand extends Command
+final class MigrateCommand extends Command
 {
     private RectorRunner $rectorRunner;
 

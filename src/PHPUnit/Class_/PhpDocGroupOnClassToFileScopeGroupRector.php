@@ -13,7 +13,7 @@ use PHPUnit\Framework\TestCase;
 use Rector\BetterPhpDocParser\PhpDocInfo\PhpDocInfo;
 use Rector\NodeTypeResolver\Node\AttributeKey;
 
-class PhpDocGroupOnClassToFileScopeGroupRector extends AbstractPHPUnitToPestRector
+final class PhpDocGroupOnClassToFileScopeGroupRector extends AbstractPHPUnitToPestRector
 {
     public function getNodeTypes(): array
     {

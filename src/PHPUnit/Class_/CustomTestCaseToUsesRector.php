@@ -11,7 +11,7 @@ use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\Class_;
 use PHPUnit\Framework\TestCase;
 
-class CustomTestCaseToUsesRector extends AbstractPHPUnitToPestRector
+final class CustomTestCaseToUsesRector extends AbstractPHPUnitToPestRector
 {
     public function getNodeTypes(): array
     {
