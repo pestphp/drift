@@ -29,16 +29,22 @@ class PestTestNamingRector extends AbstractRector
             return null;
         }
 
-        if (count($node->args) < 1 || ! is_string($this->getValue($node->args[0]->value))) {
+        $args = (array) $node->args;
+        if (count($args) === 0) {
             return null;
         }
 
-        if (! Strings::startsWith($this->getValue($node->args[0]->value), 'test')) {
+        $firstArgumentValue = $this->getValue($args[0]->value);
+        if (! is_string($this->getValue($firstArgumentValue))) {
+            return null;
+        }
+
+        if (! Strings::startsWith($this->getValue($firstArgumentValue), 'test')) {
             return null;
         }
 
         $node->name = new Name('test');
-        $node->args[0]->value = new String_(trim(substr($this->getValue($node->args[0]->value), 4)));
+        $node->args[0]->value = new String_(trim(substr($this->getValue($firstArgumentValue), 4)));
 
         return $node;
     }
