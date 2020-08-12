@@ -14,7 +14,7 @@
 ------
 **Drift** is command-line tool to migrate your PHPUnit tests to Pest.
 
-- Explore the docs: **[pestphp.com/docs/drift »](https://pestphp.com/docs/drift)**
+- Explore the docs: **[pestphp.com/docs/guides/drift »](https://pestphp.com/docs/guides/drift)**
 - Follow us on Twitter: **[@pestphp »](https://twitter.com/pestphp)**
 - Join us on the Discord Server: **[discord.gg/bMAJv82 »](https://discord.gg/bMAJv82)**
 
