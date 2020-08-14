@@ -8,9 +8,11 @@
         "composer.json"
     ],
     "exclude-composer-files": false,
+    "force-autodiscovery": true,
     "compression": "GZ",
     "compactors": [
         "KevinGH\\Box\\Compactor\\Php",
+        "KevinGH\\Box\\Compactor\\PhpScoper",
         "KevinGH\\Box\\Compactor\\Json"
     ]
 }
