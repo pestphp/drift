@@ -1,4 +1,5 @@
 <?php
+namespace MethodOverride;
 use Pest\Drift\Testing\fixtures\CustomTestCase;
 
 class MethodOverrideTest extends CustomTestCase
@@ -21,6 +22,7 @@ class MethodOverrideTest extends CustomTestCase
 ?>
 -----
 <?php
+namespace MethodOverride;
 use Pest\Drift\Testing\fixtures\CustomTestCase;
 
 class MethodOverrideTest extends CustomTestCase
@@ -30,7 +32,7 @@ class MethodOverrideTest extends CustomTestCase
         return "Oliver";
     }
 }
-uses(MethodOverrideTest::class);
+uses(\MethodOverride\MethodOverrideTest::class);
 function alwaysTrueHelper()
 {
     test()->assertTrue(true);

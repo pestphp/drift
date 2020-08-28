@@ -12,7 +12,7 @@ class CustomTestCaseTest extends CustomTestCase
 -----
 <?php
 use Pest\Drift\Testing\fixtures\CustomTestCase;
-uses(CustomTestCase::class);
+uses(\Pest\Drift\Testing\fixtures\CustomTestCase::class);
 test('testCustomTestCase', function () {
     $this->assertTrue(true);
 });
