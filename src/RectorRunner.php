@@ -18,8 +18,8 @@ final class RectorRunner
     public function run(string $path, bool $dryRun = false, bool $polish = false): Process
     {
         $rectorConfig = $polish ?
-            '/../config/polish-pest.yml' :
-            '/../config/phpunit-to-pest.yml';
+            '/../config/polish-pest.php' :
+            '/../config/phpunit-to-pest.php';
 
         $process = new Process(array_filter([
             $this->binPath,
