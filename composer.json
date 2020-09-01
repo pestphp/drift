@@ -37,10 +37,15 @@
         "bin/drift"
     ],
     "scripts": {
-        "check-cs": "vendor/bin/ecs check --ansi",
-        "fix-cs": "vendor/bin/ecs check --fix --ansi",
+        "lint": "vendor/bin/ecs check --fix --ansi",
         "phpstan": "vendor/bin/phpstan analyze --ansi --error-format symplify",
         "rector": "vendor/bin/rector process --config rector-ci.php --ansi",
-        "rector-dry": "vendor/bin/rector process --config rector-ci.php --ansi --dry-run"
+        "rector-dry": "vendor/bin/rector process --config rector-ci.php --ansi --dry-run",
+        "test:lint": "vendor/bin/ecs check --ansi",
+        "test:unit": "vendor/bin/phpunit --colors=always",
+        "test": [
+            "@test:lint",
+            "@test:unit"
+        ]
     }
 }
