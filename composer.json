@@ -38,13 +38,14 @@
     ],
     "scripts": {
         "lint": "vendor/bin/ecs check --fix --ansi",
-        "phpstan": "vendor/bin/phpstan analyze --ansi --error-format symplify",
         "rector": "vendor/bin/rector process --config rector-ci.php --ansi",
         "rector-dry": "vendor/bin/rector process --config rector-ci.php --ansi --dry-run",
         "test:lint": "vendor/bin/ecs check --ansi",
+        "test:types": "vendor/bin/phpstan analyze --ansi --memory-limit=0 --error-format symplify",
         "test:unit": "vendor/bin/phpunit --colors=always",
         "test": [
             "@test:lint",
+            "@test:types",
             "@test:unit"
         ]
     }
