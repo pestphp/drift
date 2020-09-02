@@ -21,10 +21,7 @@ use Rector\NodeTypeResolver\Node\AttributeKey;
 
 abstract class AbstractPHPUnitToPestRector extends AbstractRector
 {
-    /**
-     * @var PestCollector
-     */
-    public $pestCollector;
+    public PestCollector $pestCollector;
 
     public function __construct(PestCollector $pestCollector)
     {
@@ -64,9 +61,7 @@ abstract class AbstractPHPUnitToPestRector extends AbstractRector
             return null;
         }
 
-        $dataProviders = array_map(static function (PhpDocTagNode $tag): string {
-            return (string) $tag->value;
-        }, $phpDocInfo->getTagsByName('dataProvider'));
+        $dataProviders = array_map(static fn(PhpDocTagNode $tag): string => (string) $tag->value, $phpDocInfo->getTagsByName('dataProvider'));
 
         if ($dataProviders === []) {
             return null;

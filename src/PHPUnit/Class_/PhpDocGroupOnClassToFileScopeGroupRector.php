@@ -49,9 +49,7 @@ final class PhpDocGroupOnClassToFileScopeGroupRector extends AbstractPHPUnitToPe
             return null;
         }
 
-        return array_map(static function (PhpDocTagNode $tag): string {
-            return (string) $tag->value;
-        }, $phpDocInfo->getTagsByName('group'));
+        return array_map(static fn(PhpDocTagNode $tag): string => (string) $tag->value, $phpDocInfo->getTagsByName('group'));
     }
 
     private function createFileScopeGroupCall(array $groups): MethodCall
