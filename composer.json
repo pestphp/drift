@@ -5,7 +5,7 @@
     "license": "MIT",
     "require": {
         "php": "^7.4",
-        "rector/rector": "^0.7.62",
+        "rector/rector": "^0.8.6",
         "pestphp/pest": "^0.2"
     },
     "authors": [
@@ -26,10 +26,10 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^9.0",
-        "symplify/easy-testing": "8.1.*",
-        "symplify/easy-coding-standard": "^8.1",
+        "symplify/easy-testing": "^8.2",
+        "symplify/easy-coding-standard": "^8.2",
         "phpstan/phpstan": "^0.12.36",
-        "symplify/phpstan-extensions": "^8.1"
+        "symplify/phpstan-extensions": "^8.2"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
@@ -37,10 +37,16 @@
         "bin/drift"
     ],
     "scripts": {
-        "check-cs": "vendor/bin/ecs check --ansi",
-        "fix-cs": "vendor/bin/ecs check --fix --ansi",
-        "phpstan": "vendor/bin/phpstan analyze --ansi --error-format symplify",
+        "lint": "vendor/bin/ecs check --fix --ansi",
         "rector": "vendor/bin/rector process --config rector-ci.php --ansi",
-        "rector-dry": "vendor/bin/rector process --config rector-ci.php --ansi --dry-run"
+        "rector-dry": "vendor/bin/rector process --config rector-ci.php --ansi --dry-run",
+        "test:lint": "vendor/bin/ecs check --ansi",
+        "test:types": "vendor/bin/phpstan analyze --ansi --memory-limit=0 --error-format symplify",
+        "test:unit": "vendor/bin/phpunit --colors=always",
+        "test": [
+            "@test:lint",
+            "@test:types",
+            "@test:unit"
+        ]
     }
 }
