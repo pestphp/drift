@@ -6,7 +6,7 @@
     "require": {
         "php": "^7.4",
         "rector/rector": "^0.8.6",
-        "pestphp/pest": "^0.2"
+        "pestphp/pest": "^0.3"
     },
     "authors": [
         {
