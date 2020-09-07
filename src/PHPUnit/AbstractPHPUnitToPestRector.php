@@ -61,7 +61,10 @@ abstract class AbstractPHPUnitToPestRector extends AbstractRector
             return null;
         }
 
-        $dataProviders = array_map(static fn(PhpDocTagNode $tag): string => (string) $tag->value, $phpDocInfo->getTagsByName('dataProvider'));
+        $dataProviders = array_map(
+            static fn (PhpDocTagNode $tag): string => (string) $tag->value,
+            $phpDocInfo->getTagsByName('dataProvider')
+        );
 
         if ($dataProviders === []) {
             return null;

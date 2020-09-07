@@ -47,7 +47,7 @@ final class TraitUsesToUsesRector extends AbstractPHPUnitToPestRector
             $traits = array_merge($traits, $traitUse->traits);
         }
 
-        $traits = array_map(fn($trait) => $this->createArg(new ClassConstFetch($trait, 'class')), $traits);
+        $traits = array_map(fn ($trait) => $this->createArg(new ClassConstFetch($trait, 'class')), $traits);
 
         return $this->builderFactory->funcCall('uses', $traits);
     }
