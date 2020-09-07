@@ -19,3 +19,4 @@
 - Join us on the Discord Server: **[discord.gg/bMAJv82 »](https://discord.gg/bMAJv82)**
 
 Pest was created by **[Nuno Maduro](https://twitter.com/enunomaduro)** under the **[Sponsorware license](https://github.com/sponsorware/docs)**. It got open-sourced and is now licensed under the **[MIT license](https://opensource.org/licenses/MIT)**.
+This project has been made possible by [Rector](https://getrector.org), a great thanks to  [Tomas Votruba](https://github.com/TomasVotruba) and all off the Rector contributors.
