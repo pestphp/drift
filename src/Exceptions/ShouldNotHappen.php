@@ -6,10 +6,12 @@ namespace Pest\Drift\Exceptions;
 
 use Exception;
 use RuntimeException;
+use Throwable;
 
+/** @internal */
 final class ShouldNotHappen extends RuntimeException
 {
-    public function __construct(Exception $exception)
+    public function __construct(Throwable $exception)
     {
         $message = $exception->getMessage();
 
