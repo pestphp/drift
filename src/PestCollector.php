@@ -35,7 +35,7 @@ final class PestCollector
     /**
      * @var Node[][][]
      */
-    public $nodes = [];
+    public array $nodes = [];
 
     public function addExprToArray(string $type, Node $node, Node $newNode): void
     {

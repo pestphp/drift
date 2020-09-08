@@ -75,9 +75,10 @@ final class MethodToPestTestRector extends AbstractClassMethodRector
             return [];
         }
 
-        return array_map(static function (PhpDocTagNode $tag): string {
-            return (string) $tag->value;
-        }, $phpDocInfo->getTagsByName('group'));
+        return array_map(
+            static fn (PhpDocTagNode $tag): string => (string) $tag->value,
+            $phpDocInfo->getTagsByName('group')
+        );
     }
 
     /**
@@ -91,9 +92,10 @@ final class MethodToPestTestRector extends AbstractClassMethodRector
             return [];
         }
 
-        return array_map(static function (PhpDocTagNode $tag): string {
-            return (string) $tag->value;
-        }, $phpDocInfo->getTagsByName('depends'));
+        return array_map(
+            static fn (PhpDocTagNode $tag): string => (string) $tag->value,
+            $phpDocInfo->getTagsByName('depends')
+        );
     }
 
     private function createPestTest(ClassMethod $classMethod): FuncCall

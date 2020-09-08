@@ -11,10 +11,7 @@ use Rector\PostRector\Rector\AbstractPostRector;
 
 final class PestCollectingRector extends AbstractPostRector
 {
-    /**
-     * @var PestCollector
-     */
-    private $pestCollector;
+    private PestCollector $pestCollector;
 
     public function __construct(PestCollector $pestCollector)
     {
@@ -28,7 +25,7 @@ final class PestCollectingRector extends AbstractPostRector
 
     public function getPriority(): int
     {
-        return 1500;
+        return 1_500;
     }
 
     /**
