@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Pest\Drift\Exceptions;
 
+use Exception;
 use RuntimeException;
 
 final class ShouldNotHappen extends RuntimeException
