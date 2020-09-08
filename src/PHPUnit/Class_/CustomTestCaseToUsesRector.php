@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Pest\Drift\PHPUnit\Class_;
 
+use Pest\Drift\Exceptions\ShouldNotHappen;
 use Pest\Drift\PHPUnit\AbstractPHPUnitToPestRector;
-use Pest\Exceptions\ShouldNotHappen;
 use PhpParser\Node;
 use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\Class_;
