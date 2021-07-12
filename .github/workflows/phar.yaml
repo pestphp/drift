@@ -1,0 +1,93 @@
+name: PHAR
+
+on:
+  push:
+    tags:
+    - v[0-9]+.[0-9]+.[0-9]+
+
+env:
+  DRIFT_PHAR_NAME: drift.phar
+
+jobs:
+  version:
+    name: Version
+    runs-on: ubuntu-latest
+
+    outputs:
+      drift_version: ${{ steps.version.outputs.drift_version }}
+
+    steps:
+
+    - name: Get Drift version from tag
+      id: version
+      run: echo ::set-output name=drift_version::${GITHUB_REF/refs\/tags\//}
+
+  phar-build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    needs: version
+
+    steps:
+
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '7.4'
+        tools: composer:v2
+
+    - name: Install Composer dependencies
+      # Make sure to ignore development dependencies
+      run: composer update --no-interaction --prefer-dist --no-progress --no-dev
+
+    - name: Download Box
+      run: |
+        wget https://github.com/humbug/box/releases/latest/download/box.phar
+        chmod +x box.phar
+
+    - name: Building PHAR for Drift ${{ needs.version.outputs.drift_version }}
+      run: php box.phar compile
+
+    - name: Test compiled PHAR for Drift ${{ needs.version.outputs.drift_version }}
+      run: php bin/${{ env.DRIFT_PHAR_NAME }} --version
+
+    - uses: actions/upload-artifact@v2
+      with:
+        name: ${{ env.DRIFT_PHAR_NAME }}
+        path: bin/${{ env.DRIFT_PHAR_NAME }}
+
+  phar-release:
+    name: Release
+    runs-on: ubuntu-latest
+
+    needs: [version, phar-build]
+
+    steps:
+
+    - uses: actions/download-artifact@v2
+      with:
+        name: ${{ env.DRIFT_PHAR_NAME }}
+
+    - name: Create GitHub Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ needs.version.outputs.drift_version }}
+        draft: false
+        prerelease: false
+
+    - name: Upload Drift PHAR
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./${{ env.DRIFT_PHAR_NAME }}
+        asset_name: ${{ env.DRIFT_PHAR_NAME }}
+        asset_content_type: application/octet-stream
